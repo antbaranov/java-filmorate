@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.InvalidEmailException;
 import ru.yandex.practicum.filmorate.exception.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
@@ -49,23 +50,33 @@ public class UserController {
 
     private void validate(@Valid @RequestBody User user) {
         if (user.getLogin().contains(" ")) {
-            log.warn("Логин пользователя: {}", user.getLogin());
+            log.warn("Введенный Логин пользователя: {}", user.getLogin());
             throw new ValidationException("Логин пользователя не может содержать пробелы");
         }
-        if (user.getName() == null || user.getName().isBlank()) user.setName(user.getLogin());
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
         if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.warn("Возраст: {}", user.getBirthday());
+            log.warn("Указанная Дата рождения: {}", user.getBirthday());
             throw new ValidationException("Дата рождения не может быть в будущем!");
         }
     }
 
-    private void check(@RequestBody User user) {
-        Collection<User> userCollection = users.values();
-        for (User usr : userCollection) {
-            if (user.getLogin().equals(usr.getLogin()) || user.getEmail().equals(usr.getEmail())) {
-                log.warn("Email пользователя: {} /n Email пользователя: {}", user, usr);
-                throw new ValidationException("Пользователь с таким email или логином уже существует");
+    private void check(@RequestBody User userToAdd) {
+        Collection<User> userFromCollection = users.values();
+        for (User user : userFromCollection) {
+            if (isAlreadyExist(userToAdd, user)) {
+                log.warn("Введенный Email пользователя: {}\nСуществующий Email пользователя: {}", userToAdd, user);
+                throw new ValidationException("Пользователь с таким Email или логином уже существует");
             }
         }
+    }
+
+    private boolean isAlreadyExist(User userToAdd, User user) {
+        if (userToAdd.getLogin().equals(user.getLogin()) &&
+                userToAdd.getEmail().equals(user.getEmail())) {
+            return true;
+        }
+        return false;
     }
 }

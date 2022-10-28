@@ -15,7 +15,7 @@ import java.util.*;
 public class FilmController {
     private int id = 1;
     private static final LocalDate DATE_BEFORE = LocalDate.of(1895, 12, 28);
-      private final Map<Integer, Film> films = new HashMap();
+    private final Map<Integer, Film> films = new HashMap<>();
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
@@ -46,22 +46,30 @@ public class FilmController {
 
     private void validate(@Valid @RequestBody Film film) {
         if (film.getReleaseDate().isBefore(DATE_BEFORE) || film.getDuration() < 0) {
-            log.warn("Дата выпуска фильма: {} /n Продолжительность фильма: {}", film.getReleaseDate(), film.getDuration());
+            log.warn("Дата выпуска фильма: {}\nПродолжительность фильма: {}", film.getReleaseDate(), film.getDuration());
             throw new ValidationException("До 28 декабря 1895 кино не производили или продолжительность неверная");
         }
         if (film.getDescription().length() > 200) {
-            log.warn("Описание: {}", film.getDescription());
+            log.warn("Текущее описание фильма: {}", film.getDescription());
             throw new ValidationException("Описание должно быть не более 200 символов");
         }
     }
 
-    private void check(@RequestBody Film film) {
-        Collection<Film> filmCollection = films.values();
-        for (Film flm : filmCollection) {
-            if (film.getName().equals(flm.getName()) && film.getReleaseDate().equals(flm.getReleaseDate())) {
-                log.warn("Фильм: {}/n Фильм: {}", film, flm);
-                throw new ValidationException("Такой фильм уже добавлен");
+    private void check(@RequestBody Film filmToAdd) {
+        Collection<Film> filmFromCollection = films.values();
+        for (Film film : filmFromCollection) {
+            if (isAlreadyExist(filmToAdd, film)) {
+                log.warn("Фильм к добавлению: {}\nФильм имеется в коллекции: {}", filmToAdd, film);
+                throw new ValidationException("Такой фильм уже существует в коллекции");
             }
         }
+    }
+
+    private boolean isAlreadyExist(Film filmToAdd, Film film) {
+        if (filmToAdd.getName().equals(film.getName()) &&
+                filmToAdd.getReleaseDate().equals(film.getReleaseDate())) {
+            return true;
+        }
+        return false;
     }
 }
