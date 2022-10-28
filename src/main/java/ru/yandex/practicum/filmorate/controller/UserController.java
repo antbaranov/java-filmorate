@@ -64,19 +64,11 @@ public class UserController {
 
     private void check(@RequestBody User userToAdd) {
         Collection<User> userFromCollection = users.values();
-        for (User user : userFromCollection) {
-            if (isAlreadyExist(userToAdd, user)) {
-                log.warn("Введенный Email пользователя: {}\nСуществующий Email пользователя: {}", userToAdd, user);
-                throw new ValidationException("Пользователь с таким Email или логином уже существует");
-            }
+        if (userFromCollection.stream().anyMatch(user -> user.getLogin().equals(userToAdd.getLogin())
+                || user.getEmail().equals(userToAdd.getEmail()))) {
+            log.warn("Введенный Email пользователя: {}\nСуществующий Email пользователя: {}", userToAdd/*, user*/);
+            throw new ValidationException("Пользователь с таким Email или логином уже существует");
         }
     }
 
-    private boolean isAlreadyExist(User userToAdd, User user) {
-        if (userToAdd.getLogin().equals(user.getLogin()) &&
-                userToAdd.getEmail().equals(user.getEmail())) {
-            return true;
-        }
-        return false;
-    }
 }

@@ -55,21 +55,14 @@ public class FilmController {
         }
     }
 
+
     private void check(@RequestBody Film filmToAdd) {
         Collection<Film> filmFromCollection = films.values();
-        for (Film film : filmFromCollection) {
-            if (isAlreadyExist(filmToAdd, film)) {
-                log.warn("Фильм к добавлению: {}\nФильм имеется в коллекции: {}", filmToAdd, film);
-                throw new ValidationException("Такой фильм уже существует в коллекции");
-            }
+        if (filmFromCollection.stream().anyMatch(film -> film.getName().equals(filmToAdd.getName()) &&
+                film.getReleaseDate().equals(filmToAdd.getReleaseDate()))) {
+            log.warn("Фильм к добавлению: {}\nФильм имеется в коллекции: {}", filmToAdd/*, film*/);
+            throw new ValidationException("Такой фильм уже существует в коллекции");
         }
     }
 
-    private boolean isAlreadyExist(Film filmToAdd, Film film) {
-        if (filmToAdd.getName().equals(film.getName()) &&
-                filmToAdd.getReleaseDate().equals(film.getReleaseDate())) {
-            return true;
-        }
-        return false;
-    }
 }
