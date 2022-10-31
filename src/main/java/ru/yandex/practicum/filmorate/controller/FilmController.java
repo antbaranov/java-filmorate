@@ -53,12 +53,13 @@ public class FilmController {
             log.warn("Текущее описание фильма: {}", film.getDescription());
             throw new ValidationException("Описание должно быть не более 200 символов");
         }
+
     }
 
 
     private void check(@RequestBody Film filmToAdd) {
         boolean exists = films.values().stream()
-                .anyMatch(user -> isAlreadyExist(filmToAdd, user));
+                .anyMatch(film -> isAlreadyExist(filmToAdd, film));
         if (exists) {
             log.warn("Фильм к добавлению: {}", filmToAdd);
             throw new ValidationException("Такой фильм уже существует в коллекции");
