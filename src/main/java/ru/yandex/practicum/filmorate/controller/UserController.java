@@ -66,7 +66,7 @@ public class UserController {
         boolean exists = users.values().stream()
                 .anyMatch(user -> isAlreadyExist(userToAdd, user));
         if (exists) {
-            log.warn("Введенный Email пользователя: {}\nСуществующий Email пользователя: {}", userToAdd/*, user*/);
+            log.warn("Введенный Email пользователя: {}", userToAdd);
             throw new ValidationException("Пользователь с таким Email или логином уже существует");
         }
     }

@@ -60,7 +60,7 @@ public class FilmController {
         boolean exists = films.values().stream()
                 .anyMatch(user -> isAlreadyExist(filmToAdd, user));
         if (exists) {
-            log.warn("Фильм к добавлению: {}\nФильм имеется в коллекции: {}", filmToAdd/*, film*/);
+            log.warn("Фильм к добавлению: {}", filmToAdd);
             throw new ValidationException("Такой фильм уже существует в коллекции");
         }
     }
