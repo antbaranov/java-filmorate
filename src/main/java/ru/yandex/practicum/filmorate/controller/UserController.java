@@ -72,11 +72,7 @@ public class UserController {
     }
 
     private boolean isAlreadyExist(User userToAdd, User user) {
-        if (userToAdd.getLogin().equals(user.getLogin()) ||
-                userToAdd.getEmail().equals(user.getEmail())) {
-            return true;
-        }
-        return false;
+        return userToAdd.getLogin().equals(user.getLogin()) ||
+                userToAdd.getEmail().equals(user.getEmail());
     }
-
 }

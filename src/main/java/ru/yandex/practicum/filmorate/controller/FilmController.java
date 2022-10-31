@@ -56,7 +56,6 @@ public class FilmController {
 
     }
 
-
     private void check(@RequestBody Film filmToAdd) {
         boolean exists = films.values().stream()
                 .anyMatch(film -> isAlreadyExist(filmToAdd, film));
@@ -67,10 +66,7 @@ public class FilmController {
     }
 
     private boolean isAlreadyExist(Film filmToAdd, Film film) {
-        if (filmToAdd.getName().equals(film.getName()) &&
-                filmToAdd.getReleaseDate().equals(film.getReleaseDate())) {
-            return true;
-        }
-        return false;
+        return filmToAdd.getName().equals(film.getName()) &&
+                filmToAdd.getReleaseDate().equals(film.getReleaseDate());
     }
 }
