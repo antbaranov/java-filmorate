@@ -47,7 +47,7 @@ public class FilmController {
     private void validate(@Valid @RequestBody Film film) {
         if (film.getReleaseDate().isBefore(DATE_BEFORE) || film.getDuration() < 0) {
             log.warn("Дата выпуска фильма: {}\nПродолжительность фильма: {}", film.getReleaseDate(), film.getDuration());
-            throw new ValidationException("До 28 декабря 1895 кино не производили или продолжительность неверная");
+            throw new ValidationException("До 28 декабря 1895 года кино не производили или продолжительность неверная");
         }
         if (film.getDescription().length() > 200) {
             log.warn("Текущее описание фильма: {}", film.getDescription());
