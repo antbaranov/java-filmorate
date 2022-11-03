@@ -15,7 +15,7 @@ import java.util.*;
 public class FilmController {
     private int id = 1;
     private static final LocalDate DATE_BEFORE = LocalDate.of(1895, 12, 28);
-    private final Map<Integer, Film> films = new HashMap<>();
+    final Map<Integer, Film> films = new HashMap<>();
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
@@ -44,7 +44,7 @@ public class FilmController {
         return films.values();
     }
 
-    private void validate(@Valid @RequestBody Film film) {
+    void validate1(@Valid @RequestBody Film film) {
         if (film.getReleaseDate().isBefore(DATE_BEFORE) || film.getDuration() < 0) {
             log.warn("Дата выпуска фильма: {}\nПродолжительность фильма: {}", film.getReleaseDate(), film.getDuration());
             throw new ValidationException("До 28 декабря 1895 года кино не производили или продолжительность неверная");
@@ -54,6 +54,20 @@ public class FilmController {
             throw new ValidationException("Описание должно быть не более 200 символов");
         }
 
+    }
+
+    void validate(@Valid @RequestBody Film film) {
+        if (film.getReleaseDate().isBefore(DATE_BEFORE) || film.getDuration() < 0) {
+            log.warn("film.getReleaseDate film release date: '{}'\n film.getDuration film duration: {}", film.getReleaseDate(), film.getDuration());
+            throw new ValidationException("В то время кино еще не было или продолжительность неверная");
+        }
+        Collection<Film> filmCollection = films.values();
+        for (Film fl : filmCollection) {
+            if (film.getName().equals(fl.getName()) && film.getReleaseDate().equals(fl.getReleaseDate())) {
+                log.warn("film film: '{}'\n fl film: {}", film, fl);
+                throw new ValidationException("Такой фильм уже есть");
+            }
+        }
     }
 
     private void check(@RequestBody Film filmToAdd) {
