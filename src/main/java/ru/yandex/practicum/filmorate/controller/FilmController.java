@@ -56,20 +56,6 @@ public class FilmController {
 
     }
 
-    void validate2(@Valid @RequestBody Film film) {
-        if (film.getReleaseDate().isBefore(DATE_BEFORE) || film.getDuration() < 0) {
-            log.warn("film.getReleaseDate film release date: '{}'\n film.getDuration film duration: {}", film.getReleaseDate(), film.getDuration());
-            throw new ValidationException("В то время кино еще не было или продолжительность неверная");
-        }
-        Collection<Film> filmCollection = films.values();
-        for (Film fl : filmCollection) {
-            if (film.getName().equals(fl.getName()) && film.getReleaseDate().equals(fl.getReleaseDate())) {
-                log.warn("film film: '{}'\n fl film: {}", film, fl);
-                throw new ValidationException("Такой фильм уже есть");
-            }
-        }
-    }
-
     private void check(@RequestBody Film filmToAdd) {
         boolean exists = films.values().stream()
                 .anyMatch(film -> isAlreadyExist(filmToAdd, film));
