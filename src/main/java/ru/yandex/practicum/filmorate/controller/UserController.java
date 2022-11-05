@@ -48,7 +48,7 @@ public class UserController {
         return users.values();
     }
 
-    void validate1(@Valid @RequestBody User user) {
+    void validate(@Valid @RequestBody User user) {
         if (user.getLogin().contains(" ")) {
             log.warn("Введенный Логин пользователя: {}", user.getLogin());
             throw new ValidationException("Логин пользователя не может содержать пробелы");
@@ -62,7 +62,7 @@ public class UserController {
         }
     }
 
-    void validate(@Valid @RequestBody User user) {
+    void validate2(@Valid @RequestBody User user) {
         if (user.getLogin().contains(" ")) {
             log.warn("Логин юзера '{}'", user.getLogin());
             throw new ValidationException("Логин не может быть пустым или содержать пробелы");

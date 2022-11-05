@@ -44,7 +44,7 @@ public class FilmController {
         return films.values();
     }
 
-    void validate1(@Valid @RequestBody Film film) {
+    void validate(@Valid @RequestBody Film film) {
         if (film.getReleaseDate().isBefore(DATE_BEFORE) || film.getDuration() < 0) {
             log.warn("Дата выпуска фильма: {}\nПродолжительность фильма: {}", film.getReleaseDate(), film.getDuration());
             throw new ValidationException("До 28 декабря 1895 года кино не производили или продолжительность неверная");
@@ -56,7 +56,7 @@ public class FilmController {
 
     }
 
-    void validate(@Valid @RequestBody Film film) {
+    void validate2(@Valid @RequestBody Film film) {
         if (film.getReleaseDate().isBefore(DATE_BEFORE) || film.getDuration() < 0) {
             log.warn("film.getReleaseDate film release date: '{}'\n film.getDuration film duration: {}", film.getReleaseDate(), film.getDuration());
             throw new ValidationException("В то время кино еще не было или продолжительность неверная");
