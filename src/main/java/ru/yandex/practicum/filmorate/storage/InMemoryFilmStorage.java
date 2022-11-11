@@ -1,0 +1,76 @@
+package ru.yandex.practicum.filmorate.storage;
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
+
+import javax.validation.Valid;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+@Component
+public class InMemoryFilmStorage implements FilmStorage {
+
+    private int id = 1;
+    private static final LocalDate DATE_BEFORE = LocalDate.of(1895, 12, 28);
+    final Map<Integer, Film> films = new HashMap<>();
+
+    @PostMapping
+    public Film create(@Valid @RequestBody Film film) {
+        validate(film);
+        check(film);
+        film.setId(id++);
+        films.put(film.getId(), film);
+        log.info("Фильм: {} успешно добавлен в коллекцию", film.getName());
+        return film;
+    }
+
+    @PutMapping
+    public Film put(@Valid @RequestBody Film film) {
+        validate(film);
+        if (!films.containsKey(film.getId())) {
+            throw new ValidationException("Невозможно обновить данные о фильме, так как такого фильма у нас нет");
+        }
+        check(film);
+        films.put(film.getId(), film);
+        log.info("Информация о фильме: {} успешно обновлена", film.getName());
+        return film;
+    }
+
+    @GetMapping
+    public Collection<Film> findAll() {
+        return films.values();
+    }
+
+    void validate(@Valid @RequestBody Film film) {
+        if (film.getReleaseDate().isBefore(DATE_BEFORE) || film.getDuration() < 0) {
+            log.warn("Дата выпуска фильма: {}\nПродолжительность фильма: {}", film.getReleaseDate(), film.getDuration());
+            throw new ValidationException("До 28 декабря 1895 года кино не производили или продолжительность неверная");
+        }
+        if (film.getDescription().length() > 200) {
+            log.warn("Текущее описание фильма: {}", film.getDescription());
+            throw new ValidationException("Описание должно быть не более 200 символов");
+        }
+
+    }
+
+    private void check(@RequestBody Film filmToAdd) {
+        boolean exists = films.values().stream()
+                .anyMatch(film -> isAlreadyExist(filmToAdd, film));
+        if (exists) {
+            log.warn("Фильм к добавлению: {}", filmToAdd);
+            throw new ValidationException("Такой фильм уже существует в коллекции");
+        }
+    }
+
+    private boolean isAlreadyExist(Film filmToAdd, Film film) {
+        return filmToAdd.getName().equals(film.getName()) &&
+                filmToAdd.getReleaseDate().equals(film.getReleaseDate());
+    }
+}
