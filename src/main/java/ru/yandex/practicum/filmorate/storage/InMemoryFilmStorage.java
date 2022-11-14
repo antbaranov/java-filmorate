@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,14 +16,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
 
     private int id = 1;
     private static final LocalDate DATE_BEFORE = LocalDate.of(1895, 12, 28);
-    final Map<Integer, Film> films = new HashMap<>();
+    private final Map<Integer, Film> films = new HashMap<>();
 
-    @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
+    @Override
+    public Film create(Film film) {
         validate(film);
         check(film);
         film.setId(id++);
@@ -31,8 +33,8 @@ public class InMemoryFilmStorage implements FilmStorage {
         return film;
     }
 
-    @PutMapping
-    public Film put(@Valid @RequestBody Film film) {
+    @Override
+    public Film update(Film film) {
         validate(film);
         if (!films.containsKey(film.getId())) {
             throw new ValidationException("Невозможно обновить данные о фильме, так как такого фильма у нас нет");
@@ -43,12 +45,29 @@ public class InMemoryFilmStorage implements FilmStorage {
         return film;
     }
 
-    @GetMapping
+    @Override
     public Collection<Film> findAll() {
         return films.values();
     }
 
-    void validate(@Valid @RequestBody Film film) {
+    @Override
+    public Film getById(int id) {
+        return  films.get(id);
+    }
+
+    @Override
+    public Film deleteById(int id) {
+        Film film = films.get(id);
+        films.remove(id);
+        return film;
+    }
+
+    @Override
+    public Map<Integer, Film> getFilms() {
+        return films;
+    }
+
+    void validate(Film film) {
         if (film.getReleaseDate().isBefore(DATE_BEFORE) || film.getDuration() < 0) {
             log.warn("Дата выпуска фильма: {}\nПродолжительность фильма: {}", film.getReleaseDate(), film.getDuration());
             throw new ValidationException("До 28 декабря 1895 года кино не производили или продолжительность неверная");
@@ -60,7 +79,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     }
 
-    private void check(@RequestBody Film filmToAdd) {
+    private void check(Film filmToAdd) {
         boolean exists = films.values().stream()
                 .anyMatch(film -> isAlreadyExist(filmToAdd, film));
         if (exists) {

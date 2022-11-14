@@ -6,18 +6,17 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.Map;
 
 public interface FilmStorage {
 
-    @PostMapping
-    public Film create(@Valid @RequestBody Film film);
+    Film create(Film film);
 
-    @PutMapping
-    public Film put(@Valid @RequestBody Film film);
+    Film update(Film film);
 
-    @DeleteMapping
-    Film delete(@Valid @RequestBody Film film);
+    Film getById(int id);
+    Film deleteById(int id);
 
-    @GetMapping
-    public Collection<Film> findAll()
+    Collection<Film> findAll();
+    Map<Integer, Film> getFilms();
 }

@@ -6,18 +6,18 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.Map;
 
 public interface UserStorage {
 
-    @PostMapping
-    public User create(@Valid @RequestBody User user);
+    User create(User user);
 
-    @PutMapping
-    public User put(@Valid @RequestBody User user);
+    User update(User user);
+    User getById(int id);
 
-    @DeleteMapping
-    User delete(@Valid @RequestBody User user);
+    User deleteById(int id);
 
-    @GetMapping
-    public Collection<User> findAll();
+    Collection<User> findAll();
+    Map<Integer, User> getUsers();
+
 }
