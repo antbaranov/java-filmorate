@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import com.sun.jdi.InternalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -37,7 +39,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film update(Film film) {
         validate(film);
         if (!films.containsKey(film.getId())) {
-            throw new ValidationException("Невозможно обновить данные о фильме, так как такого фильма у нас нет");
+            throw new ObjectNotFoundException("Невозможно обновить данные о фильме, так как такого фильма у нас нет");
         }
         check(film);
         films.put(film.getId(), film);
@@ -70,11 +72,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     void validate(Film film) {
         if (film.getReleaseDate().isBefore(DATE_BEFORE) || film.getDuration() < 0) {
             log.warn("Дата выпуска фильма: {}\nПродолжительность фильма: {}", film.getReleaseDate(), film.getDuration());
-            throw new ValidationException("До 28 декабря 1895 года кино не производили или продолжительность неверная");
+            throw new InternalException("До 28 декабря 1895 года кино не производили или продолжительность неверная");
         }
         if (film.getDescription().length() > 200) {
             log.warn("Текущее описание фильма: {}", film.getDescription());
-            throw new ValidationException("Описание должно быть не более 200 символов");
+            throw new InternalException("Описание должно быть не более 200 символов");
         }
 
     }
@@ -84,7 +86,7 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .anyMatch(film -> isAlreadyExist(filmToAdd, film));
         if (exists) {
             log.warn("Фильм к добавлению: {}", filmToAdd);
-            throw new ValidationException("Такой фильм уже существует в коллекции");
+            throw new InternalException("Такой фильм уже существует в коллекции");
         }
     }
 

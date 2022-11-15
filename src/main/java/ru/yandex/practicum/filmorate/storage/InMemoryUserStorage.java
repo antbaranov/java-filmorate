@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import com.sun.jdi.InternalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -33,7 +35,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User update(User user) {
         validate(user);
         if (!users.containsKey(user.getId())) {
-            throw new ValidationException("Невозможно обновить данные, так как пользователя не существует");
+            throw new ObjectNotFoundException("Невозможно обновить данные, так как пользователя не существует");
         }
         check(user);
         users.put(user.getId(), user);
@@ -67,14 +69,14 @@ public class InMemoryUserStorage implements UserStorage {
     void validate(User user) {
         if (user.getLogin().contains(" ")) {
             log.warn("Введенный Логин пользователя: {}", user.getLogin());
-            throw new ValidationException("Логин пользователя не может содержать пробелы");
+            throw new ObjectNotFoundException("Логин пользователя не может содержать пробелы");
         }
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
         if (user.getBirthday().isAfter(LocalDate.now())) {
             log.warn("Указанная Дата рождения: {}", user.getBirthday());
-            throw new ValidationException("Дата рождения не может быть в будущем!");
+            throw new ObjectNotFoundException("Дата рождения не может быть в будущем!");
         }
     }
 
@@ -83,7 +85,7 @@ public class InMemoryUserStorage implements UserStorage {
                 .anyMatch(user -> isAlreadyExist(userToAdd, user));
         if (exists) {
             log.warn("Введенный Email пользователя: {}", userToAdd);
-            throw new ValidationException("Пользователь с таким Email или логином уже существует");
+            throw new InternalException("Пользователь с таким Email или логином уже существует");
         }
     }
 
