@@ -54,7 +54,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film getById(int id) {
-        return  films.get(id);
+        return films.get(id);
     }
 
     @Override
@@ -70,15 +70,18 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     void validate(Film film) {
-        if (film.getReleaseDate().isBefore(DATE_BEFORE) || film.getDuration() < 0) {
-            log.warn("Дата выпуска фильма: {}\nПродолжительность фильма: {}", film.getReleaseDate(), film.getDuration());
-            throw new InternalException("До 28 декабря 1895 года кино не производили или продолжительность неверная");
+        if (film.getReleaseDate().isBefore(DATE_BEFORE)) {
+            log.warn("Дата выпуска фильма: {}", film.getReleaseDate());
+            throw new ValidationException("До 28 декабря 1895 года кино не производили");
+        }
+        if (film.getDuration() < 0) {
+            log.warn("Продолжительность фильма: {}", film.getDuration());
+            throw new InternalException("Продолжительность фильма не может быть меньше нуля");
         }
         if (film.getDescription().length() > 200) {
             log.warn("Текущее описание фильма: {}", film.getDescription());
-            throw new InternalException("Описание должно быть не более 200 символов");
+            throw new ValidationException("Описание должно быть не более 200 символов");
         }
-
     }
 
     private void check(Film filmToAdd) {
@@ -86,7 +89,7 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .anyMatch(film -> isAlreadyExist(filmToAdd, film));
         if (exists) {
             log.warn("Фильм к добавлению: {}", filmToAdd);
-            throw new InternalException("Такой фильм уже существует в коллекции");
+            throw new ValidationException("Такой фильм уже существует в коллекции");
         }
     }
 

@@ -69,14 +69,14 @@ public class InMemoryUserStorage implements UserStorage {
     void validate(User user) {
         if (user.getLogin().contains(" ")) {
             log.warn("Введенный Логин пользователя: {}", user.getLogin());
-            throw new ObjectNotFoundException("Логин пользователя не может содержать пробелы");
+            throw new ValidationException("Логин пользователя не может содержать пробелы");
         }
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
         if (user.getBirthday().isAfter(LocalDate.now())) {
             log.warn("Указанная Дата рождения: {}", user.getBirthday());
-            throw new ObjectNotFoundException("Дата рождения не может быть в будущем!");
+            throw new ValidationException("Дата рождения не может быть в будущем!");
         }
     }
 
@@ -85,7 +85,7 @@ public class InMemoryUserStorage implements UserStorage {
                 .anyMatch(user -> isAlreadyExist(userToAdd, user));
         if (exists) {
             log.warn("Введенный Email пользователя: {}", userToAdd);
-            throw new InternalException("Пользователь с таким Email или логином уже существует");
+            throw new ValidationException("Пользователь с таким Email или логином уже существует");
         }
     }
 
