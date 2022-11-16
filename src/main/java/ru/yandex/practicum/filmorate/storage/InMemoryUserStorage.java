@@ -76,8 +76,9 @@ public class InMemoryUserStorage implements UserStorage {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.warn("Имя пользователя: '{}'", user.getName());
-            //throw new ValidationException("Имя не может быть пустым");
+
         }
+        
         if (user.getBirthday().isAfter(LocalDate.now())) {
             log.warn("Указанная Дата рождения: {}", user.getBirthday());
             throw new ValidationException("Дата рождения не может быть в будущем");
