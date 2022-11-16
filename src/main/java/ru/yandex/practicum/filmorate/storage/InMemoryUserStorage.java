@@ -67,16 +67,23 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     void validate(User user) {
-        if (user.getLogin().contains(" ")) {
-            log.warn("Введенный Логин пользователя: {}", user.getLogin());
-            throw new ValidationException("Логин пользователя не может содержать пробелы");
+        if (user.getEmail().isBlank() || user.getEmail() == null || user.getEmail().equals(" ")) {
+            log.warn("Введенный Email пользователя: '{}'", user.getEmail());
+            throw new ValidationException("Email не может быть пустым");
         }
-        if (user.getName() == null || user.getName().isBlank()) {
+        if (user.getLogin().isBlank() || user.getLogin() == null || user.getLogin().equals(" ")) {
+            log.warn("Введенный Логин пользователя: '{}'", user.getLogin());
+            throw new ValidationException("Логин не может быть пустым");
+        }
+
+        if (user.getName().isBlank() || user.getName() == null || user.getName().equals(" ")) {
             user.setName(user.getLogin());
+            log.warn("Имя пользователя: '{}'", user.getName());
+            throw new ValidationException("Имя не может быть пустым");
         }
         if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.warn("Указанная Дата рождения: {}", user.getBirthday());
-            throw new ValidationException("Дата рождения не может быть в будущем!");
+            log.warn("Указанная Дата рождения: '{}'", user.getBirthday());
+            throw new ValidationException("Дата рождения не может быть в будущем");
         }
     }
 

@@ -70,13 +70,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     void validate(Film film) {
+        if (film.getName().isBlank()) {
+            log.warn("Дата выпуска фильма: {}", film.getReleaseDate());
+            throw new ValidationException("Название фильма не может быть пустым");
+        }
         if (film.getReleaseDate().isBefore(DATE_BEFORE)) {
             log.warn("Дата выпуска фильма: {}", film.getReleaseDate());
             throw new ValidationException("До 28 декабря 1895 года кино не производили");
         }
         if (film.getDuration() < 0) {
             log.warn("Продолжительность фильма: {}", film.getDuration());
-            throw new InternalException("Продолжительность фильма не может быть меньше нуля");
+            throw new ValidationException("Продолжительность фильма не может быть меньше нуля");
         }
         if (film.getDescription().length() > 200) {
             log.warn("Текущее описание фильма: {}", film.getDescription());
