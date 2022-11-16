@@ -45,22 +45,6 @@ class UserControllerTest {
     }
 
     @Test
-    void createUserEmptyName() {
-        User user = new User();
-        user.setEmail("user@yandex.ru");
-        user.setLogin("Login");
-        user.setName("");
-        user.setBirthday(LocalDate.now().minusYears(16));
-
-        RuntimeException trow = assertThrows(RuntimeException.class, () -> {
-            userController.create(user);
-        });
-
-        assertEquals("Имя не может быть пустым", trow.getMessage());
-    }
-
-
-    @Test
     void createUserFailBirthday() {
         User user = new User();
         user.setEmail("user@yandex.ru");
