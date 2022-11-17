@@ -18,6 +18,7 @@ public class User {
     private Set<Integer> friends = new HashSet<>();
 
     private int id;
+    @NotNull
     @NotBlank
     @Email
     private String email;

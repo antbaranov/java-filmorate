@@ -69,21 +69,17 @@ public class InMemoryUserStorage implements UserStorage {
     void validate(User user) {
 
         if (user.getLogin().contains(" ") || user.getLogin().isBlank()) {
-            log.warn("Введенный Логин пользователя: {}", user.getLogin());
+            log.warn("Введенный Логин пользователя: '{}'", user.getLogin());
             throw new ValidationException("Логин не может быть пустым");
         }
 
         if (user.getName() == null || user.getName().equals("")) {
             user.setName(user.getLogin());
-            log.warn("Имя пользователя: '{}'", user.getName());
+            log.warn("Не заполнено Имя пользователя заменено на Логин: '{}'", user.getName());
+        }
 
-        }
-        if (user.getName().isBlank()) {
-            log.warn("Имя пользователя: '{}'", user.getName());
-            throw new ValidationException("Имя не может быть пустым");
-        }
         if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.warn("Указанная Дата рождения: {}", user.getBirthday());
+            log.warn("Указанная Дата рождения: '{}'", user.getBirthday());
             throw new ValidationException("Дата рождения не может быть в будущем");
         }
 
@@ -97,7 +93,7 @@ public class InMemoryUserStorage implements UserStorage {
         boolean exists = users.values().stream()
                 .anyMatch(user -> isAlreadyExist(userToAdd, user));
         if (exists) {
-            log.warn("Введенный Email пользователя: {}", userToAdd);
+            log.warn("Введенный Email пользователя: '{}'", userToAdd);
             throw new ValidationException("Пользователь с таким Email или логином уже существует");
         }
     }
