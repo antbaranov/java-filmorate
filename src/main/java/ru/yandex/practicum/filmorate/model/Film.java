@@ -28,4 +28,6 @@ public class Film {
     private LocalDate releaseDate;
     @Min(value = 1)
     private int duration;
+    private String genre;
+    private RatingMpa rating_mpa;
 }

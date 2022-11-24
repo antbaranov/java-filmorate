@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,9 +17,11 @@ class UserControllerTest {
     @Autowired
     private UserController userController;
 
+    User user = new User();
+
     @Test
     void createUserEmailTest() {
-        User user = new User();
+
         user.setEmail("");
         user.setLogin("Login");
         user.setName("Name");
@@ -32,7 +35,7 @@ class UserControllerTest {
 
     @Test
     void createUserEmptyLoginTest() {
-        User user = new User();
+
         user.setEmail("user@yandex.ru");
         user.setLogin("");
         user.setName("Name");
@@ -46,15 +49,10 @@ class UserControllerTest {
 
     @Test
     void createUserEmptyNameReplaceLoginTest() {
-        User user = new User();
         user.setEmail("user@yandex.ru");
         user.setLogin("Login");
         user.setName("");
         user.setBirthday(LocalDate.now().minusYears(16));
-/*
-        RuntimeException trow = assertThrows(RuntimeException.class, () -> {
-            userController.create(user);
-        });*/
         userController.create(user);
         assertEquals(user.getName(), userController.getById(1).getName());
     }
@@ -62,7 +60,6 @@ class UserControllerTest {
 
     @Test
     void createUserFailBirthdayTest() {
-        User user = new User();
         user.setEmail("user@yandex.ru");
         user.setLogin("Login");
         user.setName("Name");
