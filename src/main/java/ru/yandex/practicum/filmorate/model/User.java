@@ -15,9 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class User {
 
-    private Set<Integer> friends = new HashSet<>();
-
-    private int id;
+       private int id;
     @NotNull
     @NotBlank
     @Email
@@ -29,5 +27,5 @@ public class User {
     @NotNull
     @PastOrPresent
     private LocalDate birthday;
-    private StatusRelation statusRelation;
+    private Set<Integer> friends = new HashSet<>();
 }
