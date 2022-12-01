@@ -48,12 +48,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> findAll() {
+    public Collection<Film> getAllFilms() {
         return films.values();
     }
 
     @Override
-    public Film getById(int id) {
+    public Film getFilmById(int id) {
         return films.get(id);
     }
 

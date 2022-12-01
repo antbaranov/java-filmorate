@@ -2,10 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.*;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,19 +12,30 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Film {
-
-    private Set<Integer> usersLikes = new HashSet<>();
-
+    @PositiveOrZero(message = "id can Not be negative")
     private int id;
-    @NotBlank
+    @NotBlank(message = "name must not be empty")
     private String name;
     @NotBlank
-    @Size(max = 200, message = "Описание не может быть больше 200 символов")
+    @Size(min = 10, max = 200, message = "description length must be between 10 and 200")
     private String description;
     @NotNull
     private LocalDate releaseDate;
-    @Min(value = 1)
+    @Min(value = 1, message = "duration must be more 1")
     private int duration;
-    private String genre;
-    private RatingMpa rating_mpa;
+    @NotNull
+    private Mpa mpa;
+    private Set<Genre> genres = new HashSet<>();
+    private Set<Integer> likes = new HashSet<>();
+
+    public void addLike(Integer id) {
+        if (likes == null) {
+            likes = new HashSet<>();
+        }
+        likes.add(id);
+    }
+
+    public void deleteLike(Integer id) {
+        likes.remove(id);
+    }
 }

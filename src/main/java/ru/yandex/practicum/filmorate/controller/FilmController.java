@@ -17,22 +17,22 @@ public class FilmController {
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        return filmService.create(film);
+        return filmService.createFilm(film);
     }
 
     @PutMapping
     public Film put(@Valid @RequestBody Film film) {
-        return filmService.update(film);
+        return filmService.updateFilm(film);
     }
 
     @GetMapping
     public Collection<Film> findAll() {
-        return filmService.findAll();
+        return filmService.getAllFilms();
     }
 
     @GetMapping("/{id}")
     public Film getById(@PathVariable int id) {
-        return filmService.getById(id);
+        return filmService.getFilmById(id);
     }
 
     @DeleteMapping("/{id}")

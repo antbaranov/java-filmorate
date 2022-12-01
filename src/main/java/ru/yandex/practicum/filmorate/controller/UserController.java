@@ -17,22 +17,22 @@ public class UserController {
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        return userService.create(user);
+        return userService.createUser(user);
     }
 
     @PutMapping
     public User put(@Valid @RequestBody User user) {
-        return userService.update(user);
+        return userService.updateUser(user);
     }
 
     @GetMapping
     public Collection<User> findAll() {
-        return userService.findAll();
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
     public User getById(@PathVariable int id) {
-        return userService.getById(id);
+        return userService.getUserById(id);
     }
 
     @DeleteMapping("/{id}")

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -10,7 +11,7 @@ import javax.validation.constraints.PositiveOrZero;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Mpa {
+public class Genre {
 
     @PositiveOrZero(message = "id can NOT be negative")
     private int id;

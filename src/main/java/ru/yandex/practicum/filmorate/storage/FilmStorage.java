@@ -1,11 +1,9 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface FilmStorage {
@@ -14,9 +12,15 @@ public interface FilmStorage {
 
     Film update(Film film);
 
-    Film getById(int id);
+    Film getFilmById(int id);
     Film deleteById(int id);
 
-    Collection<Film> findAll();
+    Collection<Film> getAllFilms();
     Map<Integer, Film> getFilms();
+
+    void addLike(Integer filmId, Integer userId);
+
+    void deleteLike(Integer filmId, Integer userId);
+
+    List<Film> getFilmsPopular(Integer count);
 }

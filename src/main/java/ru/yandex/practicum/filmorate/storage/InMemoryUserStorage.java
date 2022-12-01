@@ -44,7 +44,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Collection<User> findAll() {
+    public Collection<User> getAllUsers() {
 
         return users.values();
     }
@@ -55,7 +55,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getById(int id) {
+    public User getUserById(int id) {
         return users.get(id);
     }
 
