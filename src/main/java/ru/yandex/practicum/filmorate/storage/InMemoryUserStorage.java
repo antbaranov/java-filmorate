@@ -12,7 +12,9 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -64,6 +66,14 @@ public class InMemoryUserStorage implements UserStorage {
         User user = users.get(id);
         users.remove(id);
         return user;
+    }
+
+    @Override
+    public List<User> getUserFriends(Integer userId) {
+        return users.get(userId).getFriends()
+                .stream()
+                .map(users::get)
+                .collect(Collectors.toList());
     }
 
     void validate(User user) {

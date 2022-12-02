@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,47 +17,59 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
         return userService.createUser(user);
     }
 
     @PutMapping
-    public User put(@Valid @RequestBody User user) {
+    public User updateUser(@Valid @RequestBody User user) {
         return userService.updateUser(user);
     }
 
     @GetMapping
-    public Collection<User> findAll() {
+    public Collection<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public User getById(@PathVariable int id) {
+    public User getUserById(@PathVariable Integer id) {
         return userService.getUserById(id);
     }
 
     @DeleteMapping("/{id}")
-    public User deleteById(@PathVariable int id) {
+    public User deleteById(@PathVariable Integer id) {
         return userService.deleteById(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public List<User> addFriend(@PathVariable int id, @PathVariable int friendId) {
-        return userService.addFriendship(id, friendId);
+    public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public List<User> removeFriend(@PathVariable int id, @PathVariable int friendId) {
-        return userService.removeFriendship(id, friendId);
+    public void deleteFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.deleteFriend(id, friendId);
     }
 
     @GetMapping("{id}/friends")
-    public List<User> getFriendsList(@PathVariable int id) {
+    public List<User> getFriendsListById(@PathVariable Integer id) {
+
         return userService.getFriendsListById(id);
     }
 
+    @GetMapping("/{id}/friends")
+    public List<User> getFriendsSet(@PathVariable Integer id) {
+        return userService.getUserFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Set<User> getMutualFriends(@PathVariable("id") Integer id,
+                                      @PathVariable("otherId") Integer otherId) {
+        return userService.getMutualFriends(id, otherId);
+    }
+
     @GetMapping("/{firstId}/friends/common/{secondId}")
-    public List<User> getCommonFriends(@PathVariable int firstId, @PathVariable int secondId) {
+    public List<User> getCommonFriends(@PathVariable Integer firstId, @PathVariable Integer secondId) {
         return userService.getCommonFriendsList(firstId, secondId);
     }
 }

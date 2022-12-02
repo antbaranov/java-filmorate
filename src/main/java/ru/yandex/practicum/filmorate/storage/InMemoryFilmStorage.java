@@ -2,20 +2,18 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.InternalException;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -53,12 +51,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(int id) {
+    public Film getFilmById(Integer id) {
         return films.get(id);
     }
 
     @Override
-    public Film deleteById(int id) {
+    public Film deleteById(Integer id) {
         Film film = films.get(id);
         films.remove(id);
         return film;
@@ -67,6 +65,30 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Map<Integer, Film> getFilms() {
         return films;
+    }
+
+    @Override
+    public void addLike(Integer filmId, Integer userId) {
+        films.get(filmId).addLike(userId);
+    }
+
+    @Override
+    public void deleteLike(Integer filmId, Integer userId) {
+        Film film = films.get(filmId);
+        if (!film.getLikes().contains(userId)) {
+            throw new FilmNotFoundException(String.format("Фильма с id=%d нет в базе", film.getId()));
+        }
+        film.deleteLike(userId);
+    }
+
+    @Override
+    public List<Film> getFilmsPopular(Integer count) {
+        return getAllFilms()
+                .stream()
+                .filter(film -> film.getLikes() != null)
+                .sorted((t1, t2) -> t2.getLikes().size() - t1.getLikes().size())
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     void validate(Film film) {

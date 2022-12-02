@@ -24,7 +24,7 @@ class FilmControllerTest {
         film.setDuration(100);
 
         RuntimeException trow = assertThrows(RuntimeException.class, () -> {
-            filmController.create(film);});
+            filmController.createFilm(film);});
         assertEquals("Название фильма не может быть пустым", trow.getMessage());
     }
 
@@ -37,7 +37,7 @@ class FilmControllerTest {
         film.setDuration(100);
 
         RuntimeException trow = assertThrows(RuntimeException.class, () -> {
-            filmController.create(film);});
+            filmController.createFilm(film);});
         assertEquals("До 28 декабря 1895 года кино не производили", trow.getMessage());
     }
 
@@ -50,7 +50,7 @@ class FilmControllerTest {
         film.setDuration(-100);
 
         RuntimeException trow = assertThrows(RuntimeException.class, () -> {
-            filmController.create(film);});
+            filmController.createFilm(film);});
         assertEquals("Продолжительность фильма не может быть меньше нуля", trow.getMessage());
     }
 
@@ -65,7 +65,7 @@ class FilmControllerTest {
         film.setDuration(100);
 
         RuntimeException trow = assertThrows(RuntimeException.class, () -> {
-            filmController.create(film);});
+            filmController.createFilm(film);});
         assertEquals("Описание должно быть не более 200 символов", trow.getMessage());
     }
 }

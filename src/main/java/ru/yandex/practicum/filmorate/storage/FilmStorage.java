@@ -12,8 +12,8 @@ public interface FilmStorage {
 
     Film update(Film film);
 
-    Film getFilmById(int id);
-    Film deleteById(int id);
+    Film getFilmById(Integer id);
+    Film deleteById(Integer id);
 
     Collection<Film> getAllFilms();
     Map<Integer, Film> getFilms();
