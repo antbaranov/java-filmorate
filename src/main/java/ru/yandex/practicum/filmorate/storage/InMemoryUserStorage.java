@@ -1,14 +1,11 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import com.sun.jdi.InternalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,7 +21,7 @@ public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
 
     @Override
-    public User create(User user) {
+    public User createUser(User user) {
         validate(user);
         check(user);
         user.setId(id++);
@@ -34,7 +31,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User update(User user) {
+    public User updateUser(User user) {
         validate(user);
         if (!users.containsKey(user.getId())) {
             throw new ObjectNotFoundException("Невозможно обновить данные, так как пользователя не существует");
@@ -57,12 +54,12 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUserById(int id) {
+    public User getUserById(Integer id) {
         return users.get(id);
     }
 
     @Override
-    public User deleteById(int id) {
+    public User deleteUserById(Integer id) {
         User user = users.get(id);
         users.remove(id);
         return user;
@@ -99,6 +96,20 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
+    public List<Integer> addFriendship(Integer id, Integer otherId) {
+        return null;
+    }
+
+    @Override
+    public void addFriend(Integer firstId, Integer secondId) {
+
+    }
+
+    @Override
+    public void deleteFriend(Integer userId, Integer friendId) {
+
+    }
+
     private void check(User userToAdd) {
         boolean exists = users.values().stream()
                 .anyMatch(user -> isAlreadyExist(userToAdd, user));
@@ -114,4 +125,15 @@ public class InMemoryUserStorage implements UserStorage {
 
     }
 
+    public List<Integer> removeFriendship(int firstID, int secondId) {
+        return null;
+    }
+
+    public List<User> getFriendsListById(int id) {
+        return null;
+    }
+
+    public List<User> getCommonFriendsList(int firstId, int secondId) {
+        return null;
+    }
 }

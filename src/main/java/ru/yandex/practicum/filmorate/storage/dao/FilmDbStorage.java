@@ -40,7 +40,7 @@ public class FilmDbStorage implements FilmStorage {
     public Film create(Film film) {
         String sqlQuery = "INSERT INTO FILMS " +
                 "(FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
@@ -67,19 +67,39 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        return null;
+        String sqlQuery = "update FILMS " +
+                "SET FILM_NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, RATING_ID = ? " +
+                "WHERE FILM_ID = ?";
+        jdbcTemplate.update(sqlQuery,
+                film.getName(),
+                film.getDescription(),
+                film.getReleaseDate(),
+                film.getDuration(),
+                film.getMpa().getId(),
+                film.getId());
+
+        genreService.deleteFilmGenres(film.getId());
+        if (!film.getGenres().isEmpty()) {
+            genreService.addFilmGenres(film.getId(), film.getGenres());
+        }
+
+        if (film.getLikes() != null) {
+            for (Integer userId : film.getLikes()) {
+                addLike(film.getId(), userId);
+            }
+        }
+        return getFilmById(film.getId());
     }
 
     @Override
     public Film getFilmById(Integer filmId) {
-        String sqlFilm = "select * from FILMS " +
-                "INNER JOIN RATING_MPA R on FILMS.RATING_ID = R.RATING_ID " +
-                "where FILM_ID = ?";
+        String sqlQuery = "SELECT * FROM FILMS " +
+                "INNER JOIN RATING_MPA AS R ON FILMS.RATING_ID = R.RATING_ID " +
+                "WHERE FILM_ID = ?";
         Film film;
         try {
-            film = jdbcTemplate.queryForObject(sqlFilm, (rs, rowNum) -> makeFilm(rs), filmId);
-        }
-        catch (EmptyResultDataAccessException e) {
+            film = jdbcTemplate.queryForObject(sqlQuery, (rs, rowNum) -> makeFilm(rs), filmId);
+        } catch (EmptyResultDataAccessException e) {
             throw new FilmNotFoundException(String.format("Фильма с id=%d нет в базе данных", filmId));
 
         }
@@ -94,7 +114,9 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getAllFilms() {
-        return null;
+        String sqlQuery = "SELECT * FROM FILMS " +
+                "INNER JOIN RATING_MPA AS R on FILMS.RATING_ID = R.RATING_ID";
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs));
     }
 
     @Override
@@ -114,7 +136,17 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getFilmsPopular(Integer count) {
-        return null;
+
+        String sqlQuery = "SELECT count(L.LIKE_ID) AS likeRate" +
+                ",FILMS.FILM_ID" +
+                ",FILMS.NAME_ID, FILMS.Description, ReleaseDate, Duration, R.RatingID, R.Name, R.Description from FILM " +
+                "left join LIKES AS L on L.FILM_ID = FILMS.FILM_ID " +
+                "inner join RATING_MPA R on R.RATING_ID = FILMS.RATING_ID " +
+                "group by FILMS.FILM_ID " +
+                "ORDER BY likeRate desc " +
+                "limit ?";
+        List<Film> films = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), count);
+        return films;
     }
 
 
@@ -129,8 +161,8 @@ public class FilmDbStorage implements FilmStorage {
                 new Mpa(rs.getInt("RATING_MPA.RATING_ID"),
                         rs.getString("RATING_MPA.MPA_NAME"),
                         rs.getString("RATING_MPA.DESCRIPTION")),
-                (Set<Genre>) genreService.getFilmGenres(filmId),
-                (Set<Integer>) getFilmLikes(filmId)
+                (List<Genre>) genreService.getFilmGenres(filmId),
+                (List<Integer>) getFilmLikes(filmId)
         );
         return film;
     }

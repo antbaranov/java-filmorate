@@ -4,7 +4,9 @@ import lombok.*;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -22,15 +24,15 @@ public class Film {
     @NotNull
     private LocalDate releaseDate;
     @Min(value = 1, message = "duration must be more 1")
-    private int duration;
+    private Integer duration;
     @NotNull
     private Mpa mpa;
-    private Set<Genre> genres = new HashSet<>();
-    private Set<Integer> likes = new HashSet<>();
+    private List<Genre> genres = new ArrayList<>();
+    private List<Integer> likes = new ArrayList<>();
 
     public void addLike(Integer id) {
         if (likes == null) {
-            likes = new HashSet<>();
+            likes = new ArrayList<>();
         }
         likes.add(id);
     }

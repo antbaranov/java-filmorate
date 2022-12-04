@@ -7,7 +7,9 @@ import lombok.*;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -31,18 +33,21 @@ public class User {
     @NotNull
     @PastOrPresent
     private LocalDate birthday;
-    private Set<Integer> friends;
+    private List<Integer> friends;
+
+    public User(int id, String email, String login, String name, LocalDate birthday) {
+    }
 
     public void addFriend(Integer id) {
         if (friends == null) {
-            friends = new HashSet<>();
+            friends = new ArrayList<>();
         }
         friends.add(id);
     }
 
-    public Set<Integer> getFriendsId() {
+    public List<Integer> getFriendsId() {
         if (friends == null) {
-            friends = new HashSet<>();
+            friends = new ArrayList<>();
         }
         return friends;
     }

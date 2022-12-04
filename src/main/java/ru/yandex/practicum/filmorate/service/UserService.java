@@ -28,12 +28,12 @@ public class UserService {
 
     public User createUser(User user) {
         setUserNameByLogin(user, "Добавлен");
-        return userStorage.create(user);
+        return userStorage.createUser(user);
     }
 
     public User updateUser(User user) {
         setUserNameByLogin(user, "Обновлен");
-        return userStorage.update(user);
+        return userStorage.updateUser(user);
     }
 
     public Collection<User> getAllUsers() {
@@ -41,7 +41,7 @@ public class UserService {
         return userStorage.getAllUsers();
     }
 
-    public User getUserById(int id) {
+    public User getUserById(Integer id) {
         if (!userStorage.getUsers().containsKey(id)) {
             throw new ObjectNotFoundException("Пользователь не найден");
         }
@@ -54,7 +54,7 @@ public class UserService {
             throw new ObjectNotFoundException("Пользователь не найден. Невозможно удалить неизветсного пользователя");
         }
         log.info("Пользователь с id: '{}' удален", id);
-        return userStorage.deleteById(id);
+        return userStorage.deleteUserById(id);
     }
 
     // *** Add Friend to friends list
@@ -152,6 +152,5 @@ public class UserService {
                 .map(userStorage::getUserById)
                 .collect(Collectors.toList());
     }
-
 
 }
