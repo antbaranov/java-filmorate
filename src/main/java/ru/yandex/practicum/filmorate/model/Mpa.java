@@ -11,12 +11,7 @@ import javax.validation.constraints.PositiveOrZero;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Mpa {
-
-    @PositiveOrZero(message = "id can NOT be negative")
     private int id;
-
-    @NotBlank(message = "Name must not be empty")
-    @NotNull(message = "Name must not be null")
     private String name;
     private String description;
 }

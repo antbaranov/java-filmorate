@@ -8,7 +8,7 @@ import java.util.Collection;
 
 @Service
 public class MpaService {
-   private final MpaDbStorage mpaDbStorage;
+    private final MpaDbStorage mpaDbStorage;
 
     public MpaService(MpaDbStorage mpaDbStorage) {
         this.mpaDbStorage = mpaDbStorage;

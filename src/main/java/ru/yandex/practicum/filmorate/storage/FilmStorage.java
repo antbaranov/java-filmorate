@@ -9,18 +9,13 @@ import java.util.Map;
 public interface FilmStorage {
 
     Film create(Film film);
-
     Film update(Film film);
-
     Film getFilmById(Integer id);
     Film deleteById(Integer id);
-
     Collection<Film> getAllFilms();
     Map<Integer, Film> getFilms();
-
-    void addLike(Integer filmId, Integer userId);
-
-    void deleteLike(Integer filmId, Integer userId);
-
-    List<Film> getFilmsPopular(Integer count);
+    boolean deleteFilm(Film film);
+    boolean addLike(Integer filmId, Integer userId);
+    boolean deleteLike(Integer filmId, Integer userId);
+    Collection<Film> getFilmsPopular(Integer count);
 }

@@ -20,17 +20,17 @@ public class GenreDbStorage {
 
     public boolean addFilmGenres(Integer filmId, List<Genre> genres) {
         for (Genre genre : genres) {
-            String setNewGenres = "insert into FILMS_GENRES (FILM_ID, GENRE_ID) values (?, ?) ON CONFLICT DO NOTHING";
+            String setNewGenres = "INSERT INTO GENRE_LINE (FILM_ID, GENRE_ID) VALUES (?, ?) ON CONFLICT DO NOTHING";
             jdbcTemplate.update(setNewGenres, filmId, genre.getId());
         }
         return true;
     }
 
     public List<Genre> getGenresByFilmId(int filmId) {
-        String sqlGenre = "select GENRES.GENRE_ID, GENRE_NAME from GENRES " +
-                "INNER JOIN FILMS_GENRES Fg ON GENRES.GENRE_ID = Fg.GENRE_ID " +
-                "where FILM_ID = ?";
-        return (List<Genre>) jdbcTemplate.query(sqlGenre, this::makeGenre, filmId);
+        String sqlQuery = "SELECT GENRES.GENRE_ID, GENRE_NAME FROM GENRES " +
+                "INNER JOIN GENRE_LINE ON GENRES.GENRE_ID = GENRE_LINE.GENRE_ID " +
+                "WHERE FILM_ID = ?";
+        return jdbcTemplate.query(sqlQuery, this::makeGenre, filmId);
     }
 
     private Genre makeGenre(ResultSet rs, int rowNum) throws SQLException {
@@ -39,23 +39,22 @@ public class GenreDbStorage {
     }
 
     public List<Genre> getAllGenres() {
-        String sqlGenre = "select GENRE_ID, GENRE_NAME from GENRES ORDER BY GENRE_ID";
-        return (List<Genre>) jdbcTemplate.query(sqlGenre, this::makeGenre);
+        String sqlQuery = "SELECT GENRE_ID, GENRE_NAME FROM GENRES ORDER BY GENRE_ID";
+        return jdbcTemplate.query(sqlQuery, this::makeGenre);
     }
 
     public boolean deleteFilmGenres(int filmId) {
-        String deleteOldGenres = "DELETE FROM FILMS_GENRES WHERE FILM_ID = ?";
+        String deleteOldGenres = "DELETE FROM GENRE_LINE WHERE FILM_ID = ?";
         jdbcTemplate.update(deleteOldGenres, filmId);
         return true;
     }
 
     public Genre getGenreById(int genreId) {
-        String sqlGenre = "select * from GENRES where GENRE_ID = ?";
+        String sqlQuery = "select * from GENRES where GENRE_ID = ?";
         Genre genre;
         try {
-            genre = jdbcTemplate.queryForObject(sqlGenre, this::makeGenre, genreId);
-        }
-        catch (EmptyResultDataAccessException e) {
+            genre = jdbcTemplate.queryForObject(sqlQuery, this::makeGenre, genreId);
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Жанр с идентификатором " + genreId + " не зарегистрирован!");
         }
         return genre;

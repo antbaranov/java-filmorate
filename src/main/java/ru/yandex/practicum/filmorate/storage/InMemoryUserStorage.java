@@ -66,11 +66,9 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getUserFriends(Integer userId) {
-        return users.get(userId).getFriends()
-                .stream()
-                .map(users::get)
-                .collect(Collectors.toList());
+    public boolean deleteUser(User user) {
+        users.remove(user.getId());
+        return true;
     }
 
     void validate(User user) {
@@ -100,14 +98,21 @@ public class InMemoryUserStorage implements UserStorage {
         return null;
     }
 
-    @Override
-    public void addFriend(Integer firstId, Integer secondId) {
 
+    @Override
+    public boolean addFriend(Integer userId, Integer friendId) {
+        User user = users.get(userId);
+        User friend = users.get(friendId);
+        user.addFriend(friendId);
+        friend.addFriend(userId);
+        updateUser(user);
+        updateUser(friend);
+        return true;
     }
 
     @Override
-    public void deleteFriend(Integer userId, Integer friendId) {
-
+    public boolean deleteFriend(Integer userId, Integer friendId) {
+        return false;
     }
 
     private void check(User userToAdd) {
@@ -135,5 +140,10 @@ public class InMemoryUserStorage implements UserStorage {
 
     public List<User> getCommonFriendsList(int firstId, int secondId) {
         return null;
+    }
+
+    @Override
+    public User getUser(final Integer id) {
+        return users.get(id);
     }
 }

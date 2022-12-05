@@ -51,12 +51,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        final String sqlQueryCheck = "SELECT * FROM USERS WHERE USER_ID = ?";
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(sqlQueryCheck, user.getId());
-        if (!filmRows.next()) {
-            throw new ObjectNotFoundException("Пользователь не найден");
-        }
-        final String sqlQuery = "UPDATE users SET EMAIL = ?, LOGIN = ?, USER_NAME = ?, BIRTHDAY = ? " +
+        final String sqlQuery = "UPDATE USERS SET EMAIL = ?, LOGIN = ?, USER_NAME = ?, BIRTHDAY = ? " +
                 "WHERE USER_ID = ?";
         jdbcTemplate.update(sqlQuery, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
         return getUserById(user.getId());
@@ -90,8 +85,13 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
+    public boolean deleteUser(User user) {
+        return false;
+    }
+
+    @Override
     public Collection<User> getAllUsers() {
-        final String sqlQuery = "SELECT * FROM USERS";
+        String sqlQuery = "SELECT * FROM USERS";
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeUser(rs));
     }
 
@@ -101,11 +101,11 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void addFriend(Integer userId, Integer friendId) {
+    public boolean addFriend(Integer userId, Integer friendId) {
         boolean friendAccepted;
-        String sqlGetReversFriend = "SELECT * FROM FRIENDSHIP " +
+        String sqlGetReversFriend  = "SELECT * FROM FRIENDSHIP " +
                 "WHERE USER_ID = ? AND FRIEND_ID = ?";
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sqlGetReversFriend, friendId, userId);
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sqlGetReversFriend , friendId, userId);
         friendAccepted = rs.next();
         String sqlSetFriend = "INSERT INTO FRIENDSHIP (USER_ID, FRIEND_ID, STATUS) " +
                 "VALUES (?, ?, ?)";
@@ -115,16 +115,19 @@ public class UserDbStorage implements UserStorage {
                     "WHERE USER_ID = ? AND FRIEND_ID = ?";
             jdbcTemplate.update(sqlSetStatus, friendId, userId);
         }
+        return friendAccepted;
     }
 
     @Override
-    public void deleteFriend(Integer userId, Integer friendId) {
+    public boolean deleteFriend(Integer userId, Integer friendId) {
         String sqlQuery = "DELETE FROM FRIENDSHIP WHERE USER_ID = ? AND FRIEND_ID = ?";
         jdbcTemplate.update(sqlQuery, userId, friendId);
         String sqlSetStatus = "UPDATE FRIENDSHIP SET STATUS = false " +
                 "WHERE USER_ID = ? AND FRIEND_ID = ?";
         jdbcTemplate.update(sqlSetStatus, friendId, userId);
+        return false;
     }
+
     @Override
     public List<Integer> removeFriendship(int firstID, int secondId) {
         final String sqlQuery = "DELETE FROM FRIENDSHIP WHERE USER_ID = ? AND FRIEND_ID = ?";
@@ -138,11 +141,6 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getUserFriends(Integer userId) {
-        return null;
-    }
-
-    @Override
     public List<User> getFriendsListById(int id) {
         return null;
     }
@@ -152,6 +150,19 @@ public class UserDbStorage implements UserStorage {
         return null;
     }
 
+    @Override
+    public User getUser(Integer id) {
+        String sqlUser = "SELECT * FROM USERS WHERE USER_ID = ?";
+        User user;
+        try {
+            user = jdbcTemplate.queryForObject(sqlUser, (rs, rowNum) -> makeUser(rs), id);
+        }
+        catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Пользователь с id: " +
+                    id + " не зарегистрирован!");
+        }
+        return user;
+    }
 
     private User makeUser(ResultSet rs) throws SQLException {
         int userId = rs.getInt("USER_ID");
@@ -161,8 +172,13 @@ public class UserDbStorage implements UserStorage {
                 rs.getString("LOGIN"),
                 rs.getString("USER_NAME"),
                 Objects.requireNonNull(rs.getDate("BIRTHDAY")).toLocalDate(),
-                getIdsFriends(userId));
+                getUserFriends(userId));
         return user;
+    }
+
+    private List<Integer> getUserFriends(int userId) {
+        String sqlGetFriends = "SELECT FRIEND_ID FROM FRIENDSHIP WHERE USER_ID = ?";
+        return jdbcTemplate.queryForList(sqlGetFriends, Integer.class, userId);
     }
 
     private void validate(int firstID, int secondId) {

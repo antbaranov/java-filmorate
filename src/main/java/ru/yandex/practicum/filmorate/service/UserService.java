@@ -6,33 +6,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UserValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class UserService {
-
+    private int counter = 1;
     private final UserStorage userStorage;
+    private final Validator validator;
+
 
     @Autowired
-    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage) {
+    public UserService(Validator validator, @Qualifier("UserDbStorage") UserStorage userStorage) {
+        this.validator = validator;
         this.userStorage = userStorage;
     }
 
     public User createUser(User user) {
-        setUserNameByLogin(user, "Добавлен");
+        validate(user);
+        log.info("Создан пользователь");
         return userStorage.createUser(user);
     }
 
     public User updateUser(User user) {
-        setUserNameByLogin(user, "Обновлен");
+        validate(user);
+        log.info("Обновлен пользователь");
         return userStorage.updateUser(user);
     }
 
@@ -58,35 +64,56 @@ public class UserService {
     }
 
     // *** Add Friend to friends list
-    public void addFriend(Integer userId, Integer friendId) {
-        User user = getUserById(userId);
-        User friend = getUserById(friendId);
-        user.addFriend(friendId);
-        friend.addFriend(userId);
-        log.debug("Пользователь с id: '{}' добавлен с список друзей пользователя с id: '{}'", userId, friendId);
+    public void addFriend(final String supposedUserId, final String supposedFriendId) {
+        User user = getUserStored(supposedUserId);
+        User friend = getUserStored(supposedFriendId);
+        userStorage.addFriend(user.getId(), friend.getId());
+        log.info("Пользователь с id: '{}' добавлен с список друзей пользователя с id: '{}'", supposedUserId, supposedFriendId);
     }
 
     // *** Delete the friend from friends list
-    public void deleteFriend(Integer userId, Integer friendId) {
-        User user = getUserById(userId);
-        User friend = getUserById(friendId);
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(userId);
-        log.debug("Пользователь с id: '{}' добавлен с список друзей пользователя с id: '{}'", userId, friendId);
+    public void deleteFriend(final String supposedUserId, final  String supposedFriendId) {
+        User user = getUserStored(supposedUserId);
+        User friend = getUserStored(supposedFriendId);
+        userStorage.deleteFriend(user.getId(), friend.getId());
+        log.info("Пользователь с id: '{}' добавлен с список друзей пользователя с id: '{}'", supposedUserId, supposedFriendId);
     }
 
     // *** Get all friends of the user
-    public List<User> getUserFriends(Integer userId) {
-        return userStorage.getUserFriends(userId);
+    public Collection<User> getUserFriends(String userId) {
+        User user = getUserStored(userId);
+        Collection<User> friends = new HashSet<>();
+        for (Integer id : user.getFriends()) {
+            friends.add(userStorage.getUser(id));
+        }
+        return friends;
     }
 
-    // *** Get mutual friends with another friend
-    public Set<User> getMutualFriends(Integer userId, Integer otherId) {
-        return getUserById(userId).getFriendsId()
-                .stream()
-                .filter(getUserById(otherId).getFriendsId()::contains)
-                .map(this::getUserById)
-                .collect(Collectors.toSet());
+    public User getUser(final String supposedId) {
+        return getUserStored(supposedId);
+    }
+
+    private User getUserStored(final String supposedId) {
+        final int userId = parseId(supposedId);
+        if (userId == Integer.MIN_VALUE) {
+            throw new NotFoundException("Не удалось найти id пользователя: " +
+                    "значение " + supposedId);
+        }
+        User user = userStorage.getUser(userId);
+        if (user == null) {
+            throw new NotFoundException("Пользователь с id " +
+                    userId + " не зарегистрирован!");
+        }
+        return user;
+    }
+
+
+    private Integer parseId(final String id) {
+        try {
+            return Integer.valueOf(id);
+        } catch (NumberFormatException exception) {
+            return Integer.MIN_VALUE;
+        }
     }
 
     public void setUserNameByLogin(User user, String text) {
@@ -96,36 +123,27 @@ public class UserService {
         log.debug("{} пользователь: '{}', email: '{}'", text, user.getName(), user.getEmail());
     }
 
-    public List<User> addFriend(int firstId, int secondId) {
-        if (!userStorage.getUsers().containsKey(firstId) || !userStorage.getUsers().containsKey(secondId)) {
-            throw new ObjectNotFoundException(String.format("Пользователя с id: %d или с id: %d не существует", firstId, secondId));
+    private void validate(final User user) {
+        if (user.getName() == null) {
+            user.setName(user.getLogin());
+            log.info("UserService: Поле name не задано. Установлено значение {} из поля login", user.getLogin());
+        } else if (user.getName().isEmpty() || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+            log.info("UserService: Поле name не содержит буквенных символов. " +
+                    "Установлено значение {} из поля login", user.getLogin());
         }
-        if (userStorage.getUserById(firstId).getFriends().contains(secondId)) {
-            throw new InternalException("Пользователи уже и так являются друзьями");
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        if (!violations.isEmpty()) {
+            StringBuilder messageBuilder = new StringBuilder();
+            for (ConstraintViolation<User> userConstraintViolation : violations) {
+                messageBuilder.append(userConstraintViolation.getMessage());
+            }
+            throw new UserValidationException("Ошибка валидации Пользователя: " + messageBuilder, violations);
         }
-        userStorage.getUserById(firstId).getFriends().add(secondId);
-        userStorage.getUserById(secondId).getFriends().add(firstId);
-        log.info("Пользователи: '{}' и '{}' теперь являются друзьями :)",
-                userStorage.getUserById(firstId).getName(),
-                userStorage.getUserById(secondId).getName());
-        return Arrays.asList(userStorage.getUserById(firstId), userStorage.getUserById(secondId));
+        if (user.getId() == 0) {
+            user.setId(counter++);
+        }
     }
-
-    public List<User> deleteFriend(int firstId, int secondId) {
-        if (!userStorage.getUsers().containsKey(firstId) || !userStorage.getUsers().containsKey(secondId)) {
-            throw new ObjectNotFoundException(String.format("Пользователя с id: %d или с id: %d не существует", firstId, secondId));
-        }
-        if (!userStorage.getUserById(firstId).getFriends().contains(secondId)) {
-            throw new InternalException("Пользователи не являются друзьями");
-        }
-        userStorage.getUserById(firstId).getFriends().remove(secondId);
-        userStorage.getUserById(secondId).getFriends().remove(firstId);
-        log.info("Пользователи: '{}' и '{}' больше не друзья :(",
-                userStorage.getUserById(firstId).getName(),
-                userStorage.getUserById(secondId).getName());
-        return Arrays.asList(userStorage.getUserById(firstId), userStorage.getUserById(secondId));
-    }
-
 
     public List<User> getFriendsListById(int id) {
         if (!userStorage.getUsers().containsKey(id)) {
@@ -139,18 +157,16 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public List<User> getCommonFriendsList(int firstId, int secondId) {
-        if (!userStorage.getUsers().containsKey(firstId) || !userStorage.getUsers().containsKey(secondId)) {
-            throw new ObjectNotFoundException(String.format("Пользователь с id: %d или с id: %d не существует :(", firstId, secondId));
+    public Collection<User> getCommonFriendsList(final String supposedUserId, final String supposedOtherId) {
+        User user = getUserStored(supposedUserId);
+        User otherUser = getUserStored(supposedOtherId);
+        Collection<User> commonFriends = new HashSet<>();
+        for (Integer id : user.getFriends()) {
+            if (otherUser.getFriends().contains(id)) {
+                commonFriends.add(userStorage.getUser(id));
+            }
         }
-        User firstUser = userStorage.getUserById(firstId);
-        User secondUser = userStorage.getUserById(secondId);
-        log.info("Список общих друзей пользователей: '{}' и '{}' успешено отправлен",
-                firstUser.getName(), secondUser.getName());
-        return firstUser.getFriends().stream()
-                .filter(friendId -> secondUser.getFriends().contains(friendId))
-                .map(userStorage::getUserById)
-                .collect(Collectors.toList());
+        return commonFriends;
     }
 
 }

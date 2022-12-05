@@ -52,6 +52,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film getFilmById(Integer id) {
+
         return films.get(id);
     }
 
@@ -68,26 +69,34 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void addLike(Integer filmId, Integer userId) {
-        films.get(filmId).addLike(userId);
+    public boolean deleteFilm(Film film) {
+        films.remove(film.getId());
+        return true;
     }
 
     @Override
-    public void deleteLike(Integer filmId, Integer userId) {
+    public boolean addLike(Integer filmId, Integer userId) {
         Film film = films.get(filmId);
-        if (!film.getLikes().contains(userId)) {
-            throw new FilmNotFoundException(String.format("Фильма с id=%d нет в базе", film.getId()));
-        }
-        film.deleteLike(userId);
+        film.addLike(userId);
+        update(film);
+        return true;
     }
 
     @Override
-    public List<Film> getFilmsPopular(Integer count) {
+    public boolean deleteLike(Integer filmId, Integer userId) {
+        Film film = films.get(filmId);
+        film.deleteLike(userId);
+        update(film);
+        return true;
+    }
+
+    @Override
+    public List<Film> getFilmsPopular(Integer size) {
         return getAllFilms()
                 .stream()
                 .filter(film -> film.getLikes() != null)
                 .sorted((t1, t2) -> t2.getLikes().size() - t1.getLikes().size())
-                .limit(count)
+                .limit(size)
                 .collect(Collectors.toList());
     }
 

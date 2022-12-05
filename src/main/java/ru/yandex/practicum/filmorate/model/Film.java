@@ -14,9 +14,9 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Film {
-    @PositiveOrZero(message = "id can Not be negative")
+
     private int id;
-    @NotBlank(message = "name must not be empty")
+    @NotBlank
     private String name;
     @NotBlank
     @Size(min = 10, max = 200, message = "description length must be between 10 and 200")
@@ -25,19 +25,18 @@ public class Film {
     private LocalDate releaseDate;
     @Min(value = 1, message = "duration must be more 1")
     private Integer duration;
+    private int rate;
     @NotNull
     private Mpa mpa;
     private List<Genre> genres = new ArrayList<>();
     private List<Integer> likes = new ArrayList<>();
 
-    public void addLike(Integer id) {
-        if (likes == null) {
-            likes = new ArrayList<>();
-        }
-        likes.add(id);
+    public boolean addLike(Integer id) {
+        return likes.add(id);
     }
 
-    public void deleteLike(Integer id) {
-        likes.remove(id);
+    public boolean deleteLike(Integer id) {
+
+        return likes.remove(id);
     }
 }

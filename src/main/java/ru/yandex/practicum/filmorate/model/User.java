@@ -7,10 +7,7 @@ import lombok.*;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -19,36 +16,36 @@ import java.util.Set;
 @Valid
 public class User {
 
-    @PositiveOrZero(message = "id can Not be negative")
     private int id;
-    @NotNull(message = "login must not be null")
-    @NotBlank(message = "login must not be empty")
+
     @Email(message = "invalid email")
     private String email;
+
+
     @NotNull
     @NotBlank(message = "login must not be empty")
     private String login;
-    @NotBlank(message = "name must not be empty")
     private String name;
-    @NotNull
     @PastOrPresent
     private LocalDate birthday;
     private List<Integer> friends;
+    public boolean addFriend(Integer id) {
+        return friends.add(id);
+    }
+    public boolean deleteFriend(Integer id) {
 
-    public User(int id, String email, String login, String name, LocalDate birthday) {
+        return friends.remove(id);
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return getId() == user.getId();
     }
 
-    public void addFriend(Integer id) {
-        if (friends == null) {
-            friends = new ArrayList<>();
-        }
-        friends.add(id);
-    }
-
-    public List<Integer> getFriendsId() {
-        if (friends == null) {
-            friends = new ArrayList<>();
-        }
-        return friends;
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -60,7 +59,7 @@ public class FilmService {
         return filmStorage.deleteById(id);
     }
 
-    public List<Film> getFilmsPopular(Integer count) {
+    public Collection<Film> getFilmsPopular(Integer count) {
         return filmStorage.getFilmsPopular(count);
     }
 
@@ -87,12 +86,12 @@ public class FilmService {
         log.info("Пользователь с id: {} удалил лайк фильму с id {}", userId, filmId);
         return filmStorage.getFilmById(filmId);
     }
-    public List<Film> getPopularFilms(int count) {
+    public List<Film> getPopularFilms(String count) {
         log.info("Список популярных фильмов отправлен");
 
         return filmStorage.getAllFilms().stream()
                 .sorted((o1, o2) -> Integer.compare(o2.getLikes().size(), o1.getLikes().size()))
-                .limit(count)
+                .limit(Long.parseLong(count))
                 .collect(Collectors.toList());
     }
 
