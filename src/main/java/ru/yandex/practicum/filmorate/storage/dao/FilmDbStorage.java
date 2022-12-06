@@ -65,6 +65,7 @@ public class FilmDbStorage implements FilmStorage {
         return getFilmById(id);
     }
 
+
     @Override
     public Film update(Film film) {
         String sqlQuery = "UPDATE FILMS " +
@@ -112,7 +113,6 @@ public class FilmDbStorage implements FilmStorage {
     public Film deleteById(Integer id) {
         return null;
     }
-
 
     @Override
     public boolean deleteFilm(Film film) {

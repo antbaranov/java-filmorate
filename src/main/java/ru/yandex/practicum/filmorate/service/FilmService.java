@@ -141,13 +141,13 @@ public class FilmService {
     private Film getFilmStored(final String supposedId) {
         final int filmId = parseId(supposedId);
         if (filmId == Integer.MIN_VALUE) {
-            throw new NotFoundException("Не удалось распознать id фильма: " +
+            throw new NotFoundException("Не удалось найти id фильма: " +
                     "значение " + supposedId);
         }
         Film film = filmStorage.getFilmById(filmId);
         if (film == null) {
             throw new NotFoundException("Фильм с id " +
-                    filmId + " не зарегистрирован!");
+                    filmId + " не найден!");
         }
         return film;
     }

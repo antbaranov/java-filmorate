@@ -23,14 +23,13 @@ public class FilmController {
 
     @PostMapping
     public Film createFilm(@RequestBody Film film) {
-        log.info("Получен POST запрос: Данные тела запроса: '{}'", film);
-        log.info("Создан фильм с id: {}", film.getId());
+        log.info("Получен POST запрос по адресу /films на добавление фильма: Данные запроса: '{}'", film);
         return filmService.createFilm(film);
     }
 
     @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film film) {
-        log.info("Обновлен фильм '{}'", film.getId());
+    public Film updateFilm(@RequestBody Film film) {
+        log.info("Обновлен фильм с id '{}' '{}'", film.getId(), film);
         return filmService.updateFilm(film);
     }
 

@@ -23,7 +23,7 @@ public class GenreDbStorage implements GenreStorage {
     @Override
     public boolean addFilmGenres(int filmId, Collection<Genre> genres) {
         for (Genre genre : genres) {
-            String sqlQuery = "INSERT INTO GENRE_LINE (FILM_ID, GENRE_ID) VALUES (?, ?)";
+            String sqlQuery = "INSERT INTO GENRE_LINE (FILM_ID, GENRE_ID) VALUES (?, ?) ON CONFLICT DO NOTHING";
             jdbcTemplate.update(sqlQuery, filmId, genre.getId());
         }
         return true;
@@ -61,6 +61,4 @@ public class GenreDbStorage implements GenreStorage {
         }
         return genre;
     }
-
-
 }
