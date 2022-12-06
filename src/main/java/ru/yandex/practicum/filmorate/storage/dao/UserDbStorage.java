@@ -39,6 +39,7 @@ public class UserDbStorage implements UserStorage {
             ps.setDate(4, Date.valueOf(user.getBirthday()));
             return ps;
         }, keyHolder);
+
         int id = Objects.requireNonNull(keyHolder.getKey()).intValue();
 
         if (user.getFriends() != null) {
@@ -86,7 +87,8 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public boolean deleteUser(User user) {
-        return false;
+        String sqlQuery = "DELETE FROM USERS WHERE USER_ID = ?";
+        return jdbcTemplate.update(sqlQuery, user.getId()) > 0;
     }
 
     @Override
@@ -103,9 +105,9 @@ public class UserDbStorage implements UserStorage {
     @Override
     public boolean addFriend(Integer userId, Integer friendId) {
         boolean friendAccepted;
-        String sqlGetReversFriend  = "SELECT * FROM FRIENDSHIP " +
+        String sqlGetReversFriend = "SELECT * FROM FRIENDSHIP " +
                 "WHERE USER_ID = ? AND FRIEND_ID = ?";
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sqlGetReversFriend , friendId, userId);
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sqlGetReversFriend, friendId, userId);
         friendAccepted = rs.next();
         String sqlSetFriend = "INSERT INTO FRIENDSHIP (USER_ID, FRIEND_ID, STATUS) " +
                 "VALUES (?, ?, ?)";
@@ -156,8 +158,7 @@ public class UserDbStorage implements UserStorage {
         User user;
         try {
             user = jdbcTemplate.queryForObject(sqlUser, (rs, rowNum) -> makeUser(rs), id);
-        }
-        catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователь с id: " +
                     id + " не зарегистрирован!");
         }
@@ -166,14 +167,13 @@ public class UserDbStorage implements UserStorage {
 
     private User makeUser(ResultSet rs) throws SQLException {
         int userId = rs.getInt("USER_ID");
-        User user = new User(
+        return new User(
                 userId,
                 rs.getString("EMAIL"),
                 rs.getString("LOGIN"),
                 rs.getString("USER_NAME"),
                 Objects.requireNonNull(rs.getDate("BIRTHDAY")).toLocalDate(),
                 getUserFriends(userId));
-        return user;
     }
 
     private List<Integer> getUserFriends(int userId) {

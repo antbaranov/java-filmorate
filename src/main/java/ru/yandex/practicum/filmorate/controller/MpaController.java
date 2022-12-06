@@ -24,7 +24,7 @@ public class MpaController {
     }
 
     @GetMapping
-    public Collection<Mpa> getAll() {
+    public Collection<Mpa> getAllMpa() {
         log.info("Получен запрос GET по адресу: '/mpa'");
         return mpaService.getAllMpa();
     }
@@ -32,6 +32,6 @@ public class MpaController {
     @GetMapping("/{id}")
     public Mpa getMpaById(@PathVariable String id) {
         log.info("Получен запрос GET по адресу: '/mpa/{}'", id);
-        return mpaService.getMpa(id);
+        return mpaService.getMpaById(id);
     }
 }

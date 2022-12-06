@@ -89,7 +89,7 @@ public class UserService {
         return friends;
     }
 
-    public User getUser(final String supposedId) {
+    public User getUserById(final String supposedId) {
         return getUserStored(supposedId);
     }
 

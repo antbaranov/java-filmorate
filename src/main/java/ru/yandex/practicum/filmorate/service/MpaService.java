@@ -2,25 +2,26 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.dao.MpaDbStorage;
+import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
 import java.util.Collection;
 
 @Service
 public class MpaService {
-    private final MpaDbStorage mpaDbStorage;
+    private final MpaStorage mpaStorage;
 
-    public MpaService(MpaDbStorage mpaDbStorage) {
-        this.mpaDbStorage = mpaDbStorage;
+    public MpaService(MpaStorage mpaStorage) {
+        this.mpaStorage = mpaStorage;
     }
 
     public Collection<Mpa> getAllMpa() {
-        return mpaDbStorage.getAllMpa();
+
+        return mpaStorage.getAllMpa();
     }
 
-    public Mpa getMpa(String strId) {
+    public Mpa getMpaById(String strId) {
         int id = parseId(strId);
-        return mpaDbStorage.getMpaById(id);
+        return mpaStorage.getMpaById(id);
     }
 
     private Integer parseId(final String strId) {

@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.InternalException;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -47,12 +46,16 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getAllFilms() {
-        return films.values();
+
+        Collection<Film> allFilms = films.values();
+        if (allFilms.isEmpty()) {
+            allFilms.addAll(films.values());
+        }
+        return allFilms;
     }
 
     @Override
-    public Film getFilmById(Integer id) {
-
+    public Film getFilmById(int id) {
         return films.get(id);
     }
 
@@ -64,8 +67,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Map<Integer, Film> getFilms() {
-        return films;
+    public List<Film> getFilms() {
+        return (List<Film>) films;
     }
 
     @Override
@@ -75,7 +78,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public boolean addLike(Integer filmId, Integer userId) {
+    public boolean addLike(int filmId, int userId) {
         Film film = films.get(filmId);
         film.addLike(userId);
         update(film);
@@ -83,7 +86,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public boolean deleteLike(Integer filmId, Integer userId) {
+    public boolean deleteLike(int filmId, int userId) {
         Film film = films.get(filmId);
         film.deleteLike(userId);
         update(film);
@@ -91,7 +94,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilmsPopular(Integer size) {
+    public List<Film> getPopularFilms(Integer size) {
         return getAllFilms()
                 .stream()
                 .filter(film -> film.getLikes() != null)

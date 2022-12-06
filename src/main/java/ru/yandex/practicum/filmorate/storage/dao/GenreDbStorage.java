@@ -5,28 +5,31 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 @Component
-public class GenreDbStorage {
+public class GenreDbStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
 
     public GenreDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public boolean addFilmGenres(Integer filmId, List<Genre> genres) {
+    @Override
+    public boolean addFilmGenres(int filmId, Collection<Genre> genres) {
         for (Genre genre : genres) {
-            String setNewGenres = "INSERT INTO GENRE_LINE (FILM_ID, GENRE_ID) VALUES (?, ?) ON CONFLICT DO NOTHING";
-            jdbcTemplate.update(setNewGenres, filmId, genre.getId());
+            String sqlQuery = "INSERT INTO GENRE_LINE (FILM_ID, GENRE_ID) VALUES (?, ?)";
+            jdbcTemplate.update(sqlQuery, filmId, genre.getId());
         }
         return true;
     }
 
-    public List<Genre> getGenresByFilmId(int filmId) {
+    public Collection<Genre> getGenresByFilmId(int filmId) {
         String sqlQuery = "SELECT GENRES.GENRE_ID, GENRE_NAME FROM GENRES " +
                 "INNER JOIN GENRE_LINE ON GENRES.GENRE_ID = GENRE_LINE.GENRE_ID " +
                 "WHERE FILM_ID = ?";
@@ -34,8 +37,7 @@ public class GenreDbStorage {
     }
 
     private Genre makeGenre(ResultSet rs, int rowNum) throws SQLException {
-        Genre genre = new Genre(rs.getInt("GENRE_ID"), rs.getString("GENRE_NAME"));
-        return genre;
+        return new Genre(rs.getInt("GENRE_ID"), rs.getString("GENRE_NAME"));
     }
 
     public List<Genre> getAllGenres() {
@@ -44,19 +46,21 @@ public class GenreDbStorage {
     }
 
     public boolean deleteFilmGenres(int filmId) {
-        String deleteOldGenres = "DELETE FROM GENRE_LINE WHERE FILM_ID = ?";
-        jdbcTemplate.update(deleteOldGenres, filmId);
+        String sqlQuery = "DELETE FROM GENRE_LINE WHERE FILM_ID = ?";
+        jdbcTemplate.update(sqlQuery, filmId);
         return true;
     }
 
     public Genre getGenreById(int genreId) {
-        String sqlQuery = "select * from GENRES where GENRE_ID = ?";
+        String sqlQuery = "SELECT * FROM GENRES WHERE GENRE_ID = ?";
         Genre genre;
         try {
             genre = jdbcTemplate.queryForObject(sqlQuery, this::makeGenre, genreId);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Жанр с идентификатором " + genreId + " не зарегистрирован!");
+            throw new NotFoundException("Жанр с id " + genreId + " не найден!");
         }
         return genre;
     }
+
+
 }

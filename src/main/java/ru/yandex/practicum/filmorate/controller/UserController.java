@@ -37,8 +37,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Integer id) {
+    public User getUserById(@PathVariable String id) {
         log.info("Получен запрос GET по адресу: /users/{}", id);
+        log.info("Получен пользователь с id: '{}'", id);
         return userService.getUserById(id);
     }
 

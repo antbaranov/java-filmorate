@@ -5,13 +5,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
 @Component
-public class MpaDbStorage {
+public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
     public MpaDbStorage(JdbcTemplate jdbcTemplate) {
@@ -24,10 +25,9 @@ public class MpaDbStorage {
     }
 
     private Mpa makeMpa(ResultSet rs, int rowNum) throws SQLException {
-        Mpa mpa = new Mpa(rs.getInt("RATING_MPA"),
+        return new Mpa(rs.getInt("RATING_ID"),
                 rs.getString("MPA_NAME"),
                 rs.getString("DESCRIPTION"));
-        return mpa;
     }
 
     public Mpa getMpaById(int mpaId) {

@@ -24,13 +24,13 @@ public class GenreController {
 
     @GetMapping
     public Collection<Genre> getAllGenres() {
-        log.info("Получен запрос по адресу '/genre'");
+        log.info("Получен запрос по адресу '/genres'");
         return genreService.getAllGenres();
     }
 
     @GetMapping("/{id}")
     public Genre getGenreById(@PathVariable String id) {
-        log.info("Получен запрос по адресу '/genre/{}'", id);
+        log.info("Получен запрос по адресу '/genres/{}'", id);
         return  genreService.getGenreById(id);
     }
 }
