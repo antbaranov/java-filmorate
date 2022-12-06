@@ -32,12 +32,12 @@ public class UserDbStorage implements UserStorage {
                 "VALUES ( ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            final PreparedStatement ps = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, user.getEmail());
-            ps.setString(2, user.getLogin());
-            ps.setString(3, user.getName());
-            ps.setDate(4, Date.valueOf(user.getBirthday()));
-            return ps;
+            final PreparedStatement stmt = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, user.getEmail());
+            stmt.setString(2, user.getLogin());
+            stmt.setString(3, user.getName());
+            stmt.setDate(4, Date.valueOf(user.getBirthday()));
+            return stmt;
         }, keyHolder);
 
         int id = Objects.requireNonNull(keyHolder.getKey()).intValue();

@@ -42,14 +42,14 @@ public class FilmDbStorage implements FilmStorage {
                 "VALUES (?, ?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, film.getName());
-            ps.setString(2, film.getDescription());
-            ps.setDate(3, Date.valueOf(film.getReleaseDate()));
-            ps.setLong(4, film.getDuration());
-            ps.setInt(5, film.getRate());
-            ps.setInt(6, Math.toIntExact(film.getMpa().getId()));
-            return ps;
+            PreparedStatement stmt = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, film.getName());
+            stmt.setString(2, film.getDescription());
+            stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
+            stmt.setLong(4, film.getDuration());
+            stmt.setInt(5, film.getRate());
+            stmt.setInt(6, Math.toIntExact(film.getMpa().getId()));
+            return stmt;
         }, keyHolder);
 
         int id = Objects.requireNonNull(keyHolder.getKey()).intValue();
@@ -125,14 +125,14 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> getAllFilms() {
         String sqlQuery = "SELECT * FROM FILMS " +
                 "INNER JOIN RATING_MPA ON FILMS.RATING_ID = RATING_MPA.RATING_ID ";
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs));
+        return jdbcTemplate.query(sqlQuery, (resultSet, rowNum) -> makeFilm(resultSet));
     }
 
     @Override
     public List<Film> getFilms() {
         String sqlQuery = "SELECT * FROM FILMS " +
                 "INNER JOIN RATING_MPA ON FILMS.RATING_ID = RATING_MPA.RATING_ID ";
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs));
+        return jdbcTemplate.query(sqlQuery, (resultSet, rowNum) -> makeFilm(resultSet));
     }
 
     @Override
@@ -143,9 +143,9 @@ public class FilmDbStorage implements FilmStorage {
             String setLike = "INSERT INTO LIKES (USER_ID, FILM_ID) VALUES  (?, ?) ";
             jdbcTemplate.update(setLike, userId, filmId);
         }
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sqlQuery, userId, filmId);
-        log.info(String.valueOf(rs.next()));
-        return rs.next();
+        SqlRowSet resultSet = jdbcTemplate.queryForRowSet(sqlQuery, userId, filmId);
+        log.info(String.valueOf(resultSet.next()));
+        return resultSet.next();
     }
 
     @Override

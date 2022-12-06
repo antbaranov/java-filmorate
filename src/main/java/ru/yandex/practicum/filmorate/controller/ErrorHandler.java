@@ -19,21 +19,21 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handlerValidationException(final ValidationException e) {
-        log.info("400 {}", e.getMessage());
+        log.info("400 {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handlerNotFoundException(final ObjectNotFoundException e) {
-        log.info("404 {}", e.getMessage());
+        log.info("404 {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handlerInternalException(final InternalException e) {
-        log.info("500 {}", e.getMessage());
+        log.info("500 {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 }
