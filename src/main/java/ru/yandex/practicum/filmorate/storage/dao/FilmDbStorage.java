@@ -168,7 +168,7 @@ public class FilmDbStorage implements FilmStorage {
                 "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), count);
     }
-    
+
     private Film makeFilm(ResultSet rs) throws SQLException {
         int filmId = rs.getInt("FILM_ID");
         Film film = new Film(
