@@ -20,22 +20,18 @@ public class GenreService {
     }
 
     public boolean addFilmGenres(int filmId, Collection<Genre> genres) {
-
         return genreStorage.addFilmGenres(filmId, genres);
     }
 
     public Collection<Genre> getAllGenres() {
-
         return genreStorage.getAllGenres();
     }
 
     public Collection<Genre> getFilmGenres(int filmId) {
-
         return genreStorage.getGenresByFilmId(filmId);
     }
 
     public boolean deleteFilmGenres(int filmId) {
-
         return genreStorage.deleteFilmGenres(filmId);
     }
 

@@ -29,6 +29,7 @@ public class GenreDbStorage implements GenreStorage {
         return true;
     }
 
+    @Override
     public Collection<Genre> getGenresByFilmId(int filmId) {
         String sqlQuery = "SELECT GENRES.GENRE_ID, GENRES.GENRE_NAME FROM GENRES " +
                 "INNER JOIN GENRE_LINE ON GENRES.GENRE_ID = GENRE_LINE.GENRE_ID " +
@@ -40,17 +41,20 @@ public class GenreDbStorage implements GenreStorage {
         return new Genre(rs.getInt("GENRE_ID"), rs.getString("GENRE_NAME"));
     }
 
+    @Override
     public Collection<Genre> getAllGenres() {
         String sqlQuery = "SELECT GENRE_ID, GENRE_NAME FROM GENRES ORDER BY GENRE_ID";
         return jdbcTemplate.query(sqlQuery, this::makeGenre);
     }
 
+    @Override
     public boolean deleteFilmGenres(int filmId) {
         String sqlQuery = "DELETE FROM GENRE_LINE WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQuery, filmId);
         return true;
     }
 
+    @Override
     public Genre getGenreById(int genreId) {
         String sqlQuery = "SELECT * FROM GENRES WHERE GENRE_ID = ?";
         Genre genre;

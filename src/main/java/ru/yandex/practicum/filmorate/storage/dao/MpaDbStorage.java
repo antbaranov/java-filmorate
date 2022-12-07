@@ -15,10 +15,12 @@ import java.util.Collection;
 public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    public MpaDbStorage(JdbcTemplate jdbcTemplate) {
+    public MpaDbStorage(JdbcTemplate jdbcTemplate)
+    {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Collection<Mpa> getAllMpa() {
         String sqlQuery = "SELECT * FROM RATING_MPA";
         return jdbcTemplate.query(sqlQuery, this::makeMpa);
@@ -30,6 +32,7 @@ public class MpaDbStorage implements MpaStorage {
                 rs.getString("DESCRIPTION"));
     }
 
+    @Override
     public Mpa getMpaById(int mpaId) {
         String sqlQuery = "SELECT * FROM RATING_MPA WHERE RATING_ID = ?";
         Mpa mpa;

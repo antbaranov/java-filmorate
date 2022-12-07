@@ -17,20 +17,21 @@ import java.util.Collection;
 public class GenreController {
     private final GenreService genreService;
 
-    @Autowired
+    @Autowired(required = false)
     public GenreController(GenreService genreService) {
+
         this.genreService = genreService;
     }
 
     @GetMapping
     public Collection<Genre> getAllGenres() {
-        log.info("Получен запрос по адресу '/genres'");
+        log.info("Получен GET запрос по адресу '/genres'");
         return genreService.getAllGenres();
     }
 
     @GetMapping("/{id}")
     public Genre getGenreById(@PathVariable String id) {
-        log.info("Получен запрос по адресу '/genres/{}'", id);
-        return  genreService.getGenreById(id);
+        log.info("Получен GET запрос по адресу '/genres/{}'", id);
+        return genreService.getGenreById(id);
     }
 }
