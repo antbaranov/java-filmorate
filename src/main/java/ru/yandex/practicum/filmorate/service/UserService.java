@@ -20,14 +20,20 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserService {
     private int counter = 1;
-    private final UserStorage userStorage;
     private final Validator validator;
+    private final UserStorage userStorage;
+
 
 
     @Autowired
     public UserService(Validator validator, @Qualifier("UserDbStorage") UserStorage userStorage) {
         this.validator = validator;
         this.userStorage = userStorage;
+    }
+
+    public Collection<User> getAllUsers() {
+        log.info("Список пользователей отправлен");
+        return userStorage.getAllUsers();
     }
 
     public User createUser(User user) {
@@ -42,10 +48,7 @@ public class UserService {
         return userStorage.updateUser(user);
     }
 
-    public Collection<User> getAllUsers() {
-        log.info("Список пользователей отправлен");
-        return userStorage.getAllUsers();
-    }
+
 
     public User getUserById(Integer id) {
         if (!userStorage.getUsers().containsKey(id)) {

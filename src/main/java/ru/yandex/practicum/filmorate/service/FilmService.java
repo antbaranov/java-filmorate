@@ -36,34 +36,21 @@ public class FilmService {
         this.userService = userService;
     }
 
-    public Film createFilm(Film film) {
-        validate(film);
-        validateReleaseDate(film, "");
-        return filmStorage.create(film);
-    }
-
-    public Film updateFilm(Film film) {
-        validate(film);
-        validateReleaseDate(film, "");
-        return filmStorage.update(film);
-    }
-
     public Collection<Film> getAllFilms() {
         log.info("Список фильмов отправлен");
         return filmStorage.getAllFilms();
     }
 
-
-    public Film deleteById(int id) {
-        if (!filmStorage.getFilms().contains(id)) {
-            throw new ObjectNotFoundException("Фильм не найден, удаление невозможно");
-        }
-        log.info("Фильм с id: '" + id + "' удалён");
-        return filmStorage.deleteById(id);
+    public Film createFilm(Film film) {
+        validate(film);
+        validateReleaseDate(film, "");
+        return filmStorage.createFilm(film);
     }
 
-    public Collection<Film> getFilmsPopular(Integer count) {
-        return filmStorage.getPopularFilms(count);
+    public Film updateFilm(Film film) {
+        validate(film);
+        validateReleaseDate(film, "");
+        return filmStorage.updateFilm(film);
     }
 
     public void addLike(String filmId, String userId) {
@@ -78,18 +65,6 @@ public class FilmService {
         User user = userService.getUserById(userId);
         filmStorage.deleteLike(film.getId(), user.getId());
         log.info("У Фильм с id: '{}' удалён лайк", filmId);
-    }
-
-    public Film removeLike(int filmId, int userId) {
-        if (!filmStorage.getFilms().contains(filmId)) {
-            throw new ObjectNotFoundException("Фильм не найден");
-        }
-        if (!filmStorage.getFilmById(filmId).getLikes().contains(userId)) {
-            throw new ObjectNotFoundException("Нет лайка от пользователя");
-        }
-        filmStorage.getFilmById(filmId).getLikes().contains(userId);
-        log.info("Пользователь с id: {} удалил лайк фильму с id {}", userId, filmId);
-        return filmStorage.getFilmById(filmId);
     }
 
     public Collection<Film> getPopularFilms(String count) {

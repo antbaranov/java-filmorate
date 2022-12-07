@@ -23,7 +23,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> films = new HashMap<>();
 
     @Override
-    public Film create(Film film) {
+    public Film createFilm(Film film) {
         validate(film);
         check(film);
         film.setId(id++);
@@ -33,7 +33,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film update(Film film) {
+    public Film updateFilm(Film film) {
         validate(film);
         if (!films.containsKey(film.getId())) {
             throw new ObjectNotFoundException("Невозможно обновить данные о фильме, так как такого фильма у нас нет");
@@ -59,12 +59,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.get(id);
     }
 
-    @Override
-    public Film deleteById(Integer id) {
-        Film film = films.get(id);
-        films.remove(id);
-        return film;
-    }
 
     @Override
     public List<Film> getFilms() {
@@ -81,7 +75,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public boolean addLike(int filmId, int userId) {
         Film film = films.get(filmId);
         film.addLike(userId);
-        update(film);
+        updateFilm(film);
         return true;
     }
 
@@ -89,7 +83,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public boolean deleteLike(int filmId, int userId) {
         Film film = films.get(filmId);
         film.deleteLike(userId);
-        update(film);
+        updateFilm(film);
         return true;
     }
 

@@ -21,9 +21,16 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
+    public boolean deleteFilmGenres(int filmId) {
+        String sqlQuery = "DELETE FROM FILM_GENRE WHERE FILM_ID = ?";
+        jdbcTemplate.update(sqlQuery, filmId);
+        return true;
+    }
+
+    @Override
     public boolean addFilmGenres(int filmId, Collection<Genre> genres) {
         for (Genre genre : genres) {
-            String sqlQuery = "INSERT INTO GENRE_LINE (FILM_ID, GENRE_ID) VALUES (?, ?) ON CONFLICT DO NOTHING";
+            String sqlQuery = "INSERT INTO FILM_GENRE (FILM_ID, GENRE_ID) VALUES (?, ?) ON CONFLICT DO NOTHING";
             jdbcTemplate.update(sqlQuery, filmId, genre.getId());
         }
         return true;
@@ -32,7 +39,7 @@ public class GenreDbStorage implements GenreStorage {
     @Override
     public Collection<Genre> getGenresByFilmId(int filmId) {
         String sqlQuery = "SELECT GENRES.GENRE_ID, GENRES.GENRE_NAME FROM GENRES " +
-                "INNER JOIN GENRE_LINE ON GENRES.GENRE_ID = GENRE_LINE.GENRE_ID " +
+                "INNER JOIN FILM_GENRE ON GENRES.GENRE_ID = FILM_GENRE.GENRE_ID " +
                 "WHERE FILM_ID = ?";
         return jdbcTemplate.query(sqlQuery, this::makeGenre, filmId);
     }
@@ -45,13 +52,6 @@ public class GenreDbStorage implements GenreStorage {
     public Collection<Genre> getAllGenres() {
         String sqlQuery = "SELECT GENRE_ID, GENRE_NAME FROM GENRES ORDER BY GENRE_ID";
         return jdbcTemplate.query(sqlQuery, this::makeGenre);
-    }
-
-    @Override
-    public boolean deleteFilmGenres(int filmId) {
-        String sqlQuery = "DELETE FROM GENRE_LINE WHERE FILM_ID = ?";
-        jdbcTemplate.update(sqlQuery, filmId);
-        return true;
     }
 
     @Override

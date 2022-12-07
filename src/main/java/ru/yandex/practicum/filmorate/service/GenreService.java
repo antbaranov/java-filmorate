@@ -19,10 +19,6 @@ public class GenreService {
         this.genreStorage = genreStorage;
     }
 
-    public boolean addFilmGenres(int filmId, Collection<Genre> genres) {
-        return genreStorage.addFilmGenres(filmId, genres);
-    }
-
     public Collection<Genre> getAllGenres() {
         return genreStorage.getAllGenres();
     }
@@ -31,14 +27,20 @@ public class GenreService {
         return genreStorage.getGenresByFilmId(filmId);
     }
 
-    public boolean deleteFilmGenres(int filmId) {
-        return genreStorage.deleteFilmGenres(filmId);
-    }
 
     public Genre getGenreById(String strId) {
         int id = parseId(strId);
         return genreStorage.getGenreById(id);
     }
+    public boolean deleteFilmGenres(int filmId) {
+
+        return genreStorage.deleteFilmGenres(filmId);
+    }
+    public boolean addFilmGenres(int filmId, Collection<Genre> genres) {
+        return genreStorage.addFilmGenres(filmId, genres);
+    }
+
+
 
     private Integer parseId(final String strId) {
         try {

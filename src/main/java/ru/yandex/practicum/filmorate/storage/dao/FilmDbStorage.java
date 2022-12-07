@@ -35,8 +35,32 @@ public class FilmDbStorage implements FilmStorage {
         this.genreService = genreService;
     }
 
+
     @Override
-    public Film create(Film film) {
+    public Film getFilmById(int filmId) {
+        String sqlQuery = "SELECT * FROM FILMS " +
+                "INNER JOIN RATING_MPA ON FILMS.RATING_ID = RATING_MPA.RATING_ID " +
+                "WHERE FILM_ID = ?";
+        Film film;
+        try {
+            film = jdbcTemplate.queryForObject(sqlQuery, (rs, rowNum) -> makeFilm(rs), filmId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(String.format("Фильма с id=%d нет в базе данных", filmId));
+        }
+        log.info("Найден фильм: {} {}", film.getId(), film.getName());
+        return film;
+    }
+
+    @Override
+    public Collection<Film> getAllFilms() {
+        String sqlQuery = "SELECT * FROM FILMS " +
+                "INNER JOIN RATING_MPA ON FILMS.RATING_ID = RATING_MPA.RATING_ID ";
+        return jdbcTemplate.query(sqlQuery, (resultSet, rowNum) -> makeFilm(resultSet));
+    }
+
+    @Override
+    public Film createFilm(Film film) {
+
         String sqlQuery = "INSERT INTO FILMS " +
                 "(FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATE, RATING_ID) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
@@ -51,8 +75,8 @@ public class FilmDbStorage implements FilmStorage {
             stmt.setInt(6, Math.toIntExact(film.getMpa().getId()));
             return stmt;
         }, keyHolder);
-
         int id = Objects.requireNonNull(keyHolder.getKey()).intValue();
+        film.setId(id);
 
         if (!film.getGenres().isEmpty()) {
             genreService.addFilmGenres(film.getId(), film.getGenres());
@@ -65,9 +89,12 @@ public class FilmDbStorage implements FilmStorage {
         return getFilmById(id);
     }
 
-
     @Override
-    public Film update(Film film) {
+    public Film updateFilm(Film film) {
+
+        String sqlQueryDel = "DELETE FROM FILM_GENRE WHERE FILM_ID = ?";
+        jdbcTemplate.update(sqlQueryDel, film.getId());
+
         String sqlQuery = "UPDATE FILMS " +
                 "SET FILM_NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, RATE = ? , RATING_ID = ? " +
                 "WHERE FILM_ID = ?";
@@ -93,39 +120,12 @@ public class FilmDbStorage implements FilmStorage {
         return getFilmById(film.getId());
     }
 
-    @Override
-    public Film getFilmById(int filmId) {
-        String sqlQuery = "SELECT * FROM FILMS " +
-                "INNER JOIN RATING_MPA ON FILMS.RATING_ID = RATING_MPA.RATING_ID " +
-                "WHERE FILM_ID = ?";
-        Film film;
-        try {
-            film = jdbcTemplate.queryForObject(sqlQuery, (rs, rowNum) -> makeFilm(rs), filmId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(String.format("Фильма с id=%d нет в базе данных", filmId));
-
-        }
-        log.info("Найден фильм: {} {}", film.getId(), film.getName());
-        return film;
-    }
-
-    @Override
-    public Film deleteById(Integer id) {
-        return null;
-    }
 
     @Override
     public boolean deleteFilm(Film film) {
         String sqlQuery = "DELETE FROM FILMS WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQuery, film.getId());
         return true;
-    }
-
-    @Override
-    public Collection<Film> getAllFilms() {
-        String sqlQuery = "SELECT * FROM FILMS " +
-                "INNER JOIN RATING_MPA ON FILMS.RATING_ID = RATING_MPA.RATING_ID ";
-        return jdbcTemplate.query(sqlQuery, (resultSet, rowNum) -> makeFilm(resultSet));
     }
 
     @Override
@@ -168,8 +168,7 @@ public class FilmDbStorage implements FilmStorage {
                 "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), count);
     }
-
-
+    
     private Film makeFilm(ResultSet rs) throws SQLException {
         int filmId = rs.getInt("FILM_ID");
         Film film = new Film(
