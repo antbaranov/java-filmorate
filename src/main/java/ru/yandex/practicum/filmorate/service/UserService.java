@@ -23,8 +23,6 @@ public class UserService {
     private final Validator validator;
     private final UserStorage userStorage;
 
-
-
     @Autowired
     public UserService(Validator validator, @Qualifier("UserDbStorage") UserStorage userStorage) {
         this.validator = validator;
@@ -47,8 +45,6 @@ public class UserService {
         log.info("Обновлен пользователь");
         return userStorage.updateUser(user);
     }
-
-
 
     public User getUserById(Integer id) {
         if (!userStorage.getUsers().containsKey(id)) {
@@ -75,7 +71,7 @@ public class UserService {
     }
 
     // *** Delete the friend from friends list
-    public void deleteFriend(final String supposedUserId, final  String supposedFriendId) {
+    public void deleteFriend(final String supposedUserId, final String supposedFriendId) {
         User user = getUserStored(supposedUserId);
         User friend = getUserStored(supposedFriendId);
         userStorage.deleteFriend(user.getId(), friend.getId());
@@ -109,7 +105,6 @@ public class UserService {
         }
         return user;
     }
-
 
     private Integer parseId(final String id) {
         try {
@@ -171,5 +166,4 @@ public class UserService {
         }
         return commonFriends;
     }
-
 }

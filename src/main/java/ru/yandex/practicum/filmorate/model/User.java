@@ -9,18 +9,16 @@ import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor()
 @NoArgsConstructor
 @Valid
 public class User {
 
     private int id;
-
     @Email(message = "invalid email")
     private String email;
-
-
     @NotNull
     @NotBlank(message = "login must not be empty")
     private String login;
@@ -32,7 +30,6 @@ public class User {
         return friends.add(id);
     }
     public boolean deleteFriend(Integer id) {
-
         return friends.remove(id);
     }
     @Override
