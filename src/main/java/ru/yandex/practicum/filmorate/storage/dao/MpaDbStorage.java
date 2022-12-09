@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -12,13 +13,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 @Component
+@RequiredArgsConstructor
 public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    public MpaDbStorage(JdbcTemplate jdbcTemplate)
-    {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Collection<Mpa> getAllMpa() {
@@ -39,8 +36,7 @@ public class MpaDbStorage implements MpaStorage {
         try {
             mpa = jdbcTemplate.queryForObject(sqlQuery, this::makeMpa, mpaId);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Возрастной рейтинг с id: '" +
-                    mpaId + "' не найден!");
+            throw new NotFoundException(String.format("Возрастной рейтинг с id: '%d' не найден", mpaId));
         }
         return mpa;
     }

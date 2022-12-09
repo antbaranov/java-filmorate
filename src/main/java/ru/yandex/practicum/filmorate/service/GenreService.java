@@ -1,23 +1,17 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.dao.GenreDbStorage;
 
 import java.util.Collection;
-import java.util.List;
 
 @Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GenreService {
     private final GenreStorage genreStorage;
-
-    @Autowired
-    public GenreService(GenreStorage genreStorage) {
-
-        this.genreStorage = genreStorage;
-    }
 
     public Collection<Genre> getAllGenres() {
         return genreStorage.getAllGenres();
@@ -27,20 +21,19 @@ public class GenreService {
         return genreStorage.getGenresByFilmId(filmId);
     }
 
-
     public Genre getGenreById(String strId) {
         int id = parseId(strId);
         return genreStorage.getGenreById(id);
     }
+
     public boolean deleteFilmGenres(int filmId) {
 
         return genreStorage.deleteFilmGenres(filmId);
     }
+
     public boolean addFilmGenres(int filmId, Collection<Genre> genres) {
         return genreStorage.addFilmGenres(filmId, genres);
     }
-
-
 
     private Integer parseId(final String strId) {
         try {

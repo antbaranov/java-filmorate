@@ -4,19 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.FilmValidationException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import javax.validation.Validator;
 import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -100,8 +98,9 @@ public class FilmService {
     private static int getNextId() {
         return counter++;
     }
+
     public Film getFilmById(String id) {
-        log.info("Фильм с id: '" + id + "' отправлен");
+        log.info("Фильм с id: '{}' отправлен", id);
         return getFilmStored(id);
     }
 
@@ -116,13 +115,11 @@ public class FilmService {
     private Film getFilmStored(final String supposedId) {
         final int filmId = parseId(supposedId);
         if (filmId == Integer.MIN_VALUE) {
-            throw new NotFoundException("Не удалось найти id фильма: " +
-                    "значение " + supposedId);
+            throw new NotFoundException("Не удалось найти id фильма: '{}'", supposedId);
         }
         Film film = filmStorage.getFilmById(filmId);
         if (film == null) {
-            throw new NotFoundException("Фильм с id " +
-                    filmId + " не найден!");
+            throw new NotFoundException(String.format("Фильм с id: '%d' не найден", filmId));
         }
         return film;
     }

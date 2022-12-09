@@ -94,11 +94,6 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
-    public List<Integer> addFriendship(Integer id, Integer otherId) {
-        return null;
-    }
-
-
     @Override
     public boolean addFriend(Integer userId, Integer friendId) {
         User user = users.get(userId);
@@ -127,19 +122,6 @@ public class InMemoryUserStorage implements UserStorage {
     private boolean isAlreadyExist(User userToAdd, User user) {
         return userToAdd.getLogin().equals(user.getLogin()) ||
                 userToAdd.getEmail().equals(user.getEmail());
-
-    }
-
-    public List<Integer> removeFriendship(int firstID, int secondId) {
-        return null;
-    }
-
-    public List<User> getFriendsListById(int id) {
-        return null;
-    }
-
-    public List<User> getCommonFriendsList(int firstId, int secondId) {
-        return null;
     }
 
     @Override

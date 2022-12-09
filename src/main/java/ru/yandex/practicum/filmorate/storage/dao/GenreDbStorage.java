@@ -1,10 +1,11 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
 import java.sql.ResultSet;
@@ -12,13 +13,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 @Component
+@RequiredArgsConstructor
 public class GenreDbStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    public GenreDbStorage(JdbcTemplate jdbcTemplate) {
-
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public boolean deleteFilmGenres(int filmId) {
@@ -44,8 +41,8 @@ public class GenreDbStorage implements GenreStorage {
         return jdbcTemplate.query(sqlQuery, this::makeGenre, filmId);
     }
 
-    private Genre makeGenre(ResultSet rs, int rowNum) throws SQLException {
-        return new Genre(rs.getInt("GENRE_ID"), rs.getString("GENRE_NAME"));
+    private Genre makeGenre(ResultSet resultSet, int rowNum) throws SQLException {
+        return new Genre(resultSet.getInt("GENRE_ID"), resultSet.getString("GENRE_NAME"));
     }
 
     @Override
@@ -61,7 +58,7 @@ public class GenreDbStorage implements GenreStorage {
         try {
             genre = jdbcTemplate.queryForObject(sqlQuery, this::makeGenre, genreId);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Жанр с id " + genreId + " не найден!");
+            throw new NotFoundException(String.format("Жанр с id: '%d' не найден", genreId));
         }
         return genre;
     }

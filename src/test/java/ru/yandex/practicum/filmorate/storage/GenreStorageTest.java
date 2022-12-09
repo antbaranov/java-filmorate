@@ -7,21 +7,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.dao.GenreDbStorage;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class GenreStorageTest {
-    private GenreDbStorage genreStorage;
+    private final GenreStorage genreStorage;
 
     @Test
-    void getAllGenresTest() {
+    public void getAllGenresTest() {
         Collection<Genre> genre = genreStorage.getAllGenres();
         Assertions.assertThat(genre)
                 .extracting(Genre::getName)
@@ -29,18 +30,18 @@ class GenreStorageTest {
     }
 
     @Test
-    void getGenresByFilmId() {
+    public void getAllGenresSizeTest() {
+        Collection<Genre> genres = genreStorage.getAllGenres();
+        assertEquals(6, genres.size());
     }
 
     @Test
-    void getGenreById() {
-    }
-
-    @Test
-    void addFilmGenres() {
-    }
-
-    @Test
-    void deleteFilmGenres() {
+    public void GetGenreByIdTest() {
+        Optional<Genre> genreOptional = Optional.ofNullable(genreStorage.getGenreById(1));
+        assertThat(genreOptional)
+                .isPresent()
+                .hasValueSatisfying(genre ->
+                        assertThat(genre).hasFieldOrPropertyWithValue("id", 1)
+                );
     }
 }

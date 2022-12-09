@@ -1,13 +1,11 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.dao.FilmDbStorage;
@@ -25,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class FilmStorageTest {
     private final FilmDbStorage filmStorage;
 
-    private Film film1 = new Film(1,
+    private final Film film1 = new Film(1,
             "film1 name",
             "film1 description",
             LocalDate.now().minusYears(10),
@@ -35,7 +33,7 @@ class FilmStorageTest {
             new ArrayList<>(),
             new ArrayList<>());
 
-    private Film film2 = new Film(2,
+    private final Film film2 = new Film(2,
             "film2 name",
             "film2 description",
             LocalDate.now().minusYears(15),
@@ -45,7 +43,7 @@ class FilmStorageTest {
             new ArrayList<>(),
             new ArrayList<>());
 
-    private Film film = new Film(1,
+    private final Film film = new Film(1,
             "Name film",
             "Description film",
             LocalDate.now().minusYears(10),
@@ -56,7 +54,7 @@ class FilmStorageTest {
             new ArrayList<>());
 
     @Test
-    void addFilmTest() {
+    public void addFilmTest() {
         filmStorage.createFilm(film);
         AssertionsForClassTypes.assertThat(film).extracting("id").isNotNull();
         AssertionsForClassTypes.assertThat(film).extracting("name").isNotNull();
@@ -70,7 +68,7 @@ class FilmStorageTest {
     }
 
     @Test
-    void updateFilmTest() {
+    public void updateFilmTest() {
         Film added = filmStorage.createFilm(film);
         added.setName("film updated");
         filmStorage.updateFilm(added);
@@ -79,7 +77,7 @@ class FilmStorageTest {
     }
 
     @Test
-    void deleteFilmTest() {
+    public void deleteFilmTest() {
         Film addedFilm1 = filmStorage.createFilm(film1);
         Film addedFilm2 = filmStorage.createFilm(film2);
         Collection<Film> beforeDelete = filmStorage.getAllFilms();

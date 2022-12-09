@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -13,28 +15,18 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.GenreService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
 @Component("FilmDbStorage")
+@RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreService genreService;
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
-
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreService genreService) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.genreService = genreService;
-    }
-
 
     @Override
     public Film getFilmById(int filmId) {
@@ -44,7 +36,7 @@ public class FilmDbStorage implements FilmStorage {
         Film film;
         try {
             film = jdbcTemplate.queryForObject(sqlQuery, (rs, rowNum) -> makeFilm(rs), filmId);
-        } catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException exception) {
             throw new NotFoundException(String.format("Фильма с id=%d нет в базе данных", filmId));
         }
         log.info("Найден фильм: {} {}", film.getId(), film.getName());
@@ -60,20 +52,19 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film createFilm(Film film) {
-
         String sqlQuery = "INSERT INTO FILMS " +
                 "(FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATE, RATING_ID) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, film.getName());
-            stmt.setString(2, film.getDescription());
-            stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
-            stmt.setLong(4, film.getDuration());
-            stmt.setInt(5, film.getRate());
-            stmt.setInt(6, Math.toIntExact(film.getMpa().getId()));
-            return stmt;
+            PreparedStatement prepareStatement = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
+            prepareStatement.setString(1, film.getName());
+            prepareStatement.setString(2, film.getDescription());
+            prepareStatement.setDate(3, Date.valueOf(film.getReleaseDate()));
+            prepareStatement.setLong(4, film.getDuration());
+            prepareStatement.setInt(5, film.getRate());
+            prepareStatement.setInt(6, Math.toIntExact(film.getMpa().getId()));
+            return prepareStatement;
         }, keyHolder);
         int id = Objects.requireNonNull(keyHolder.getKey()).intValue();
         film.setId(id);
@@ -91,7 +82,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-
         String sqlQueryDel = "DELETE FROM FILM_GENRE WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQueryDel, film.getId());
 
@@ -119,7 +109,6 @@ public class FilmDbStorage implements FilmStorage {
         }
         return getFilmById(film.getId());
     }
-
 
     @Override
     public boolean deleteFilm(Film film) {
@@ -157,7 +146,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getPopularFilms(Integer count) {
-
         String sqlQuery = "SELECT COUNT(L.LIKE_ID) AS like_rate" +
                 ",FILMS.FILM_ID, FILMS.FILM_NAME, FILMS.DESCRIPTION, " +
                 "FILMS.RELEASE_DATE, FILMS.DURATION, FILMS.RATE, R.RATING_ID, R.MPA_NAME, R.DESCRIPTION FROM FILMS " +
@@ -169,18 +157,18 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), count);
     }
 
-    private Film makeFilm(ResultSet rs) throws SQLException {
-        int filmId = rs.getInt("FILM_ID");
+    private Film makeFilm(ResultSet resultSet) throws SQLException {
+        int filmId = resultSet.getInt("FILM_ID");
         Film film = new Film(
                 filmId,
-                rs.getString("FILMS.FILM_NAME"),
-                rs.getString("FILMS.DESCRIPTION"),
-                Objects.requireNonNull(rs.getDate("FILMS.RELEASE_DATE")).toLocalDate(),
-                rs.getInt("FILMS.DURATION"),
-                rs.getInt("FILMS.RATE"),
-                new Mpa(rs.getInt("RATING_MPA.RATING_ID"),
-                        rs.getString("RATING_MPA.MPA_NAME"),
-                        rs.getString("RATING_MPA.DESCRIPTION")),
+                resultSet.getString("FILMS.FILM_NAME"),
+                resultSet.getString("FILMS.DESCRIPTION"),
+                Objects.requireNonNull(resultSet.getDate("FILMS.RELEASE_DATE")).toLocalDate(),
+                resultSet.getInt("FILMS.DURATION"),
+                resultSet.getInt("FILMS.RATE"),
+                new Mpa(resultSet.getInt("RATING_MPA.RATING_ID"),
+                        resultSet.getString("RATING_MPA.MPA_NAME"),
+                        resultSet.getString("RATING_MPA.DESCRIPTION")),
                 (List<Genre>) genreService.getFilmGenres(filmId),
                 getFilmLikes(filmId)
         );

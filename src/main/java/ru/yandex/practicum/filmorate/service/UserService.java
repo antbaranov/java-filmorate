@@ -1,19 +1,21 @@
 package ru.yandex.practicum.filmorate.service;
 
-import com.sun.jdi.InternalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -95,13 +97,11 @@ public class UserService {
     private User getUserStored(final String supposedId) {
         final int userId = parseId(supposedId);
         if (userId == Integer.MIN_VALUE) {
-            throw new NotFoundException("Не удалось найти id пользователя: " +
-                    "значение " + supposedId);
+            throw new NotFoundException(String.format("Не удалось найти id пользователя: %d", supposedId));
         }
         User user = userStorage.getUser(userId);
         if (user == null) {
-            throw new NotFoundException("Пользователь с id " +
-                    userId + " не зарегистрирован!");
+            throw new NotFoundException(String.format("Пользователь с id: '%d' не зарегистрирован!", userId));
         }
         return user;
     }
@@ -141,18 +141,6 @@ public class UserService {
         if (user.getId() == 0) {
             user.setId(counter++);
         }
-    }
-
-    public List<User> getFriendsListById(int id) {
-        if (!userStorage.getUsers().containsKey(id)) {
-            throw new ObjectNotFoundException("Нам очень жаль, невозможно получить список друзей пользователя, " +
-                    "так как пользователь не найден :(");
-        }
-        log.info("Успех! Запрос получения списка друзей пользователя '{}' выполнен успешно :)",
-                userStorage.getUserById(id).getName());
-        return userStorage.getUserById(id).getFriends().stream()
-                .map(userStorage::getUserById)
-                .collect(Collectors.toList());
     }
 
     public Collection<User> getCommonFriendsList(final String supposedUserId, final String supposedOtherId) {
