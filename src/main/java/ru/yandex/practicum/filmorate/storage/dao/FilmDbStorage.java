@@ -146,8 +146,8 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getPopularFilms(Integer count) {
-        String sqlQuery = "SELECT COUNT(L.LIKE_ID) AS like_rate" +
-                ",FILMS.FILM_ID, FILMS.FILM_NAME, FILMS.DESCRIPTION, " +
+        String sqlQuery = "SELECT COUNT(L.LIKE_ID) AS like_rate, " +
+                "FILMS.FILM_ID, FILMS.FILM_NAME, FILMS.DESCRIPTION, " +
                 "FILMS.RELEASE_DATE, FILMS.DURATION, FILMS.RATE, R.RATING_ID, R.MPA_NAME, R.DESCRIPTION FROM FILMS " +
                 "LEFT JOIN LIKES AS L ON L.FILM_ID = FILMS.FILM_ID " +
                 "INNER JOIN RATING_MPA AS R ON R.RATING_ID = FILMS.RATING_ID " +

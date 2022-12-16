@@ -27,7 +27,7 @@ public class FilmService {
     private static final LocalDate START_DATA = LocalDate.of(1895, 12, 28);
 
     @Autowired
-    public FilmService(Validator validator, @Qualifier("FilmDbStorage") FilmStorage filmStorage,
+    public FilmService(Validator validator, FilmStorage filmStorage,
                        @Autowired(required = false) UserService userService) {
         this.validator = validator;
         this.filmStorage = filmStorage;
