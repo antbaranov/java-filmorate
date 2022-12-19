@@ -1,33 +1,62 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Film {
-
-    private Set<Integer> usersLikes = new HashSet<>();
-
     private int id;
     @NotBlank
     private String name;
     @NotBlank
-    @Size(max = 200, message = "Описание не может быть больше 200 символов")
+    @Size(min = 10, max = 200, message = "description length must be between 10 and 200")
     private String description;
     @NotNull
     private LocalDate releaseDate;
-    @Min(value = 1)
-    private int duration;
-    private String genre;
-    private RatingMpa rating_mpa;
+    @Min(value = 1, message = "duration must be more 1")
+    private Integer duration;
+    private int rate;
+    @NotNull
+    private Mpa mpa;
+    private List<Genre> genres = new ArrayList<>();
+    private List<Integer> likes = new ArrayList<>();
+
+    public boolean addLike(Integer id) {
+        return likes.add(id);
+    }
+
+    public boolean deleteLike(Integer id) {
+        return likes.remove(id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Film)) {
+            return false;
+        }
+        Film film = (Film) o;
+        return getId() == film.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
 }

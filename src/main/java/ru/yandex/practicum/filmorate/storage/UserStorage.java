@@ -1,23 +1,30 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface UserStorage {
 
-    User create(User user);
+    User createUser(User user);
 
-    User update(User user);
-    User getById(int id);
+    User updateUser(User user);
 
-    User deleteById(int id);
+    User getUserById(Integer id);
 
-    Collection<User> findAll();
+    User deleteUserById(Integer id);
+
+    boolean deleteUser(User user);
+
+    Collection<User> getAllUsers();
+
+    boolean addFriend(Integer firstId, Integer secondId);
+
+    boolean deleteFriend(Integer userId, Integer friendId);
+
     Map<Integer, User> getUsers();
 
+    User getUser(final Integer id);
 }
