@@ -1,60 +1,80 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
-@Slf4j
 @RequiredArgsConstructor
 public class FilmController {
 
     private final FilmService filmService;
 
+    @GetMapping
+    public Collection<Film> findAll() {
+        return filmService.findAll();
+    }
+
     @PostMapping
-    public Film createFilm(@RequestBody Film film) {
-        log.info("Получен POST запрос по адресу /films на добавление фильма: Данные запроса: '{}'", film);
-        return filmService.createFilm(film);
+    public Film create(@Valid @RequestBody Film film) {
+        return filmService.save(film);
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
-        log.info("Обновлен фильм с id '{}' '{}'", film.getId(), film);
-        return filmService.updateFilm(film);
+    public Film put(@Valid @RequestBody Film film) {
+        return filmService.update(film);
     }
 
-    @GetMapping
-    public Collection<Film> getAllFilms() {
-        log.info("Получен GET запрос по адресу '/films'");
-        return filmService.getAllFilms();
+    @GetMapping("{id}")
+    public Film getById(@PathVariable int id) {
+        return filmService.getFilmFromStorage(id);
     }
 
-    @GetMapping("/{id}")
-    public Film getFilmById(@PathVariable String id) {
-        log.info("Получен GET запрос по адресу '/films/{}'", id);
-        return filmService.getFilmById(id);
+    @PutMapping("/{id}/like/{userId}")
+    public Film putLike(@PathVariable("id") int filmId,
+                        @PathVariable int userId) {
+        return filmService.putLike(filmId, userId);
     }
 
-    @PutMapping("/{filmId}/like/{userId}")
-    public void addLike(@PathVariable String filmId, @PathVariable String userId) {
-        log.info("Добавлен лайк на фильим '{}' от пользователя '{}'", filmId, userId);
-        filmService.addLike(filmId, userId);
+    @DeleteMapping("/{id}/like/{userId}")
+    public Film deleteLike(@PathVariable("id") int filmId,
+                           @PathVariable int userId) {
+        return filmService.deleteLike(filmId, userId);
     }
 
-    @DeleteMapping("/{filmId}/like/{userId}")
-    public void deleteLike(@PathVariable String filmId, @PathVariable String userId) {
-        log.info("Удален лайк на фильим '{}' от пользователя '{}'", filmId, userId);
-        filmService.deleteLike(filmId, userId);
+    @GetMapping("/popular")
+    public Collection<Film> getMostRatedFilms(@RequestParam(defaultValue = "10") int count,
+                                              @RequestParam Optional<Integer> genreId,
+                                              @RequestParam Optional<Integer> year) {
+        return filmService.getPopular(count, genreId, year);
     }
 
-    @GetMapping({"/popular?count={count}", "/popular"})
-    public Collection<Film> getPopularFilms(@RequestParam(defaultValue = "10") String count) {
-        log.info("Получен GET запрос по адресу '/films/popular?count={}'", count);
-        return filmService.getPopularFilms(count);
+    @GetMapping("/director/{directorId}")
+    public List<Film> getByDirectorId(@PathVariable Integer directorId,
+                                      @RequestParam String sortBy) {
+        return filmService.getSortedDirectorsFilms(directorId, sortBy);
+    }
+
+    @DeleteMapping("/{filmId}")
+    public void deleteById(@PathVariable int filmId) {
+        filmService.deleteById(filmId);
+    }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam long userId,
+                                     @RequestParam long friendId) {
+        return filmService.getCommonFilmsByRating(userId, friendId);
+    }
+
+    @GetMapping("/search")
+    public Collection<Film> getSearchResults(@RequestParam String query, @RequestParam(defaultValue = "title") Optional<List<String>> by) {
+        return filmService.getSearchResults(query, by.get());
     }
 }
