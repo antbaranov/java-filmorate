@@ -93,12 +93,12 @@ public class FilmService {
         }
     }
 
-    public Film getFilmFromStorage(int id) {
+    public Film getFilmFromStorage(long id) {
         return filmStorage.findFilmById(id)
                 .orElseThrow(() -> new NotFoundException("Фильм не найден!"));
     }
 
-    public Film putLike(int filmId, int userId) {
+    public Film putLike(long filmId, long userId) {
 
         Film film = getFilmFromStorage(filmId);
         userService.findUserById(userId);
@@ -108,7 +108,7 @@ public class FilmService {
         return film;
     }
 
-    public Film deleteLike(int filmId, int userId) {
+    public Film deleteLike(long filmId, long userId) {
 
         Film film = getFilmFromStorage(filmId);
         User user = userService.findUserById(userId);
@@ -122,11 +122,11 @@ public class FilmService {
         return filmStorage.getCommonFilmsByRating(userId, friendId);
     }
 
-    public Collection<Film> getPopular(int count, Optional<Integer> genreId, Optional<Integer> year) {
+    public Collection<Film> getPopular(long count, Optional<Integer> genreId, Optional<Integer> year) {
         return filmStorage.getPopular(count, genreId, year);
     }
 
-    public List<Film> getSortedDirectorsFilms(int id, String sortBy) {
+    public List<Film> getSortedDirectorsFilms(long id, String sortBy) {
         directorService.findDirectorById(id);
 
         log.info("Проверяем способ сортировки");
@@ -140,7 +140,7 @@ public class FilmService {
         }
     }
 
-    public void deleteById(int filmId) {
+    public void deleteById(long filmId) {
         filmStorage.deleteById(filmId);
         log.info("Фильм удален с id: '{}'", filmId);
     }
@@ -149,9 +149,9 @@ public class FilmService {
         return filmStorage.getSearchResults(query, by);
     }
 
-    public Collection<Film> getRecommendations(int userWantsRecomId) {
+    public Collection<Film> getRecommendations(long userWantsRecomId) {
         log.info("Найден пользователь с похожими лайками");
-        int userWithCommonLikesId = userStorage.findUserWithCommonLikes(userWantsRecomId);
+        long userWithCommonLikesId = userStorage.findUserWithCommonLikes(userWantsRecomId);
         log.info("Выгружаем список рекомендованных фильмов для пользователя {}", userWantsRecomId);
         return filmStorage.getFilmRecommendation(userWantsRecomId, userWithCommonLikesId);
     }

@@ -19,14 +19,14 @@ public class FeedDbStorage implements FeedStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Collection<Feed> getFeedByUserId(Integer userId) {
+    public Collection<Feed> getFeedByUserId(long userId) {
         String sqlQuery = "SELECT * FROM FEED WHERE USER_ID = ? ORDER BY TIME_STAMP ASC";
 
         return jdbcTemplate.query(sqlQuery, this::mapRowToFeed, userId);
     }
 
     @Override
-    public void addFeed(Integer entityId, Integer userId, long timeStamp,
+    public void addFeed(long entityId, long userId, long timeStamp,
                         EventType eventType, Operation operation) {
         String sqlQuery = "INSERT INTO FEED(ENTITY_ID, USER_ID, TIME_STAMP, EVENT_TYPE, OPERATION) " +
                 "VALUES (?, ?, ?, ?, ?)";

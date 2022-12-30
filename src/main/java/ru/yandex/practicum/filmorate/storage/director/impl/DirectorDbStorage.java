@@ -51,16 +51,16 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public Optional<Director> findDirectorById(int id) {
+    public Optional<Director> findDirectorById(long id) {
         String sqlQuery = "SELECT DIRECTOR_ID, NAME FROM DIRECTORS WHERE DIRECTOR_ID = ?";
 
         SqlRowSet directorRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
         if (directorRows.next()) {
             Director director = Director.builder()
-                    .id(directorRows.getInt("DIRECTOR_ID"))
+                    .id(directorRows.getLong("DIRECTOR_ID"))
                     .name(directorRows.getString("NAME"))
                     .build();
-            log.info("Найден режиссер с id: {}, по имени {} ", directorRows.getInt("DIRECTOR_ID"),
+            log.info("Найден режиссер с id: {}, по имени {} ", directorRows.getLong("DIRECTOR_ID"),
                     directorRows.getString("NAME"));
             return Optional.of(director);
         } else {
@@ -70,14 +70,14 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public boolean deleteDirector(int id) {
-        String sql = "DELETE FROM DIRECTORS WHERE DIRECTOR_ID = ?";
-        return jdbcTemplate.update(sql, id) > 0;
+    public boolean deleteDirector(long id) {
+        String sqlQuery = "DELETE FROM DIRECTORS WHERE DIRECTOR_ID = ?";
+        return jdbcTemplate.update(sqlQuery, id) > 0;
     }
 
-    public Director mapRowToDirector(ResultSet resultSet, int i) throws SQLException {
+    public Director mapRowToDirector(ResultSet resultSet, long i) throws SQLException {
         return Director.builder()
-                .id(resultSet.getInt("DIRECTOR_ID"))
+                .id(resultSet.getLong("DIRECTOR_ID"))
                 .name(resultSet.getString("NAME"))
                 .build();
     }

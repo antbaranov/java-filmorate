@@ -1,7 +1,7 @@
 DROP ALL OBJECTS;
 create table IF NOT EXISTS USERS
 (
-    USER_ID  INTEGER auto_increment,
+    USER_ID  LONG auto_increment,
     EMAIL    CHARACTER VARYING(50) not null,
     LOGIN    CHARACTER VARYING(50) not null,
     NAME     CHARACTER VARYING(50),
@@ -12,8 +12,8 @@ create table IF NOT EXISTS USERS
 
 create table IF NOT EXISTS FRIENDS
 (
-    USER_ID   INTEGER not null,
-    FRIEND_ID INTEGER not null,
+    USER_ID   LONG not null,
+    FRIEND_ID LONG not null,
     constraint FRIENDS_USERS_USER_ID_FK
         foreign key (USER_ID) references USERS
             ON DELETE CASCADE,
@@ -24,12 +24,13 @@ create table IF NOT EXISTS FRIENDS
 
 CREATE TABLE IF NOT EXISTS DIRECTORS
 (
-    DIRECTOR_ID   INTEGER auto_increment,
-    NAME          CHARACTER VARYING(50) not null,
+    DIRECTOR_ID LONG auto_increment,
+    NAME        CHARACTER VARYING(50) not null,
     CONSTRAINT directors_pk PRIMARY KEY (DIRECTOR_ID)
 );
 
-CREATE TABLE IF NOT EXISTS MPA (
+CREATE TABLE IF NOT EXISTS MPA
+(
     MPA_ID INTEGER auto_increment,
     NAME   CHARACTER VARYING(50) not null,
     constraint "MPA_pk"
@@ -38,7 +39,7 @@ CREATE TABLE IF NOT EXISTS MPA (
 
 create table IF NOT EXISTS FILMS
 (
-    FILM_ID      INTEGER auto_increment,
+    FILM_ID      LONG auto_increment,
     NAME         CHARACTER VARYING(200) not null,
     DESCRIPTION  CHARACTER VARYING(200) not null,
     RELEASE_DATE DATE                   not null,
@@ -53,8 +54,8 @@ create table IF NOT EXISTS FILMS
 
 create table IF NOT EXISTS FILM_LIKES
 (
-    FILM_ID INTEGER not null,
-    USER_ID INTEGER not null,
+    FILM_ID LONG not null,
+    USER_ID LONG not null,
     constraint FILMLIKES_FILMS_FILM_ID_FK
         foreign key (FILM_ID) references FILMS
             ON DELETE CASCADE,
@@ -65,8 +66,8 @@ create table IF NOT EXISTS FILM_LIKES
 
 create table IF NOT EXISTS FILM_DIRECTOR
 (
-    film_id     INTEGER NOT NULL,
-    director_id INTEGER NOT NULL,
+    film_id     LONG NOT NULL,
+    director_id LONG NOT NULL,
     CONSTRAINT pk_film_director
         PRIMARY KEY (film_id, director_id),
     CONSTRAINT fk_film_director_film_id
@@ -88,7 +89,7 @@ create table IF NOT EXISTS GENRE
 
 create table IF NOT EXISTS FILM_GENRE
 (
-    FILM_ID  INTEGER not null,
+    FILM_ID  LONG    not null,
     GENRE_ID INTEGER not null,
     constraint FILM_GENRE_FILMS_FILM_ID_FK
         foreign key (FILM_ID) references FILMS
@@ -99,9 +100,9 @@ create table IF NOT EXISTS FILM_GENRE
 
 create table IF NOT EXISTS FEED
 (
-    EVENT_ID   INTEGER auto_increment,
-    ENTITY_ID  INTEGER               not null,
-    USER_ID    INTEGER               not null,
+    EVENT_ID   LONG auto_increment,
+    ENTITY_ID  LONG                  not null,
+    USER_ID    LONG                  not null,
     TIME_STAMP LONG                  not null,
     EVENT_TYPE CHARACTER VARYING(10) not null,
     OPERATION  CHARACTER VARYING(10) not null,
@@ -114,26 +115,26 @@ create table IF NOT EXISTS FEED
 
 create table IF NOT EXISTS REVIEWS
 (
-    REVIEW_ID   INTEGER auto_increment,
+    REVIEW_ID   LONG auto_increment,
     CONTENT     CHARACTER VARYING not null,
     IS_POSITIVE BOOLEAN           not null,
-    USER_ID     INTEGER           not null,
-    FILM_ID     INTEGER           not null,
+    USER_ID     LONG              not null,
+    FILM_ID     LONG              not null,
     constraint "REVIEWS_pk"
         primary key (REVIEW_ID),
     constraint "REVIEWS_FILMS_null_fk"
         foreign key (FILM_ID) references FILMS
-        on delete cascade,
+            on delete cascade,
     constraint REVIEWS_USERS_USER_ID_FK
         foreign key (USER_ID) references USERS
-        on delete cascade
+            on delete cascade
 );
 
 create table IF NOT EXISTS REVIEW_USER
 (
-    REVIEW_ID INTEGER not null,
-    USER_ID   INTEGER not null,
-    IS_USEFUL INTEGER not null,
+    REVIEW_ID LONG not null,
+    USER_ID   LONG not null,
+    IS_USEFUL LONG not null,
     constraint REVIEW_USER_REVIEWS_REVIEW_ID_FK
         foreign key (REVIEW_ID) references REVIEWS
             on delete cascade,

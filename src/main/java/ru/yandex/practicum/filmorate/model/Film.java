@@ -12,7 +12,7 @@ import java.util.LinkedHashSet;
 @Data
 @Builder
 public class Film {
-    private int id;
+    private long id;
     @NotNull
     @NotBlank
     private String name;
@@ -23,8 +23,8 @@ public class Film {
     private LocalDate releaseDate;
     @NotNull
     @Positive
-    private Long duration;
-    private MPA mpa;
+    private int duration;
+    private Mpa mpa;
     private LinkedHashSet<Genre> genres;
     private LinkedHashSet<Director> directors;
 }

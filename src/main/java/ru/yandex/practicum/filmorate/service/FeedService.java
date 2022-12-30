@@ -19,14 +19,14 @@ public class FeedService {
     private final FeedStorage feedStorage;
     private final UserStorage userStorage;
 
-    public void addFeed(Integer entityId, Integer userId, EventType eventType, Operation operation) {
+    public void addFeed(long entityId, long userId, EventType eventType, Operation operation) {
         long timeStamp = Instant.now().toEpochMilli();
         userStorage.findUserById(userId);
         feedStorage.addFeed(entityId, userId, timeStamp, eventType, operation);
         log.info("Добавлено событие с id: '{}'", entityId);
     }
 
-    public Collection<Feed> getFeedByUserId(Integer userId) {
+    public Collection<Feed> getFeedByUserId(long userId) {
         userStorage.findUserById(userId);
         Collection<Feed> feed = feedStorage.getFeedByUserId(userId);
         log.info("Получен список событий, размер списка '{}'", feed.size());

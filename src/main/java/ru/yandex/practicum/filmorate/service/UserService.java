@@ -81,35 +81,35 @@ public class UserService {
         return user;
     }
 
-    public User findUserById(int id) {
+    public User findUserById(long id) {
         return userStorage.findUserById(id).
                 orElseThrow(() -> new NotFoundException("Пользователь не найден!"));
     }
 
-    public void addFriend(int id, int friendId) {
+    public void addFriend(long id, long friendId) {
         userStorage.addFriend(findUserById(id), findUserById(friendId));
         feedService.addFeed(friendId, id, FRIEND, ADD);
     }
 
-    public void deleteFriend(int id, int friendId) {
+    public void deleteFriend(long id, long friendId) {
         userStorage.deleteFriend(findUserById(id), findUserById(friendId));
         feedService.addFeed(friendId, id, FRIEND, REMOVE);
     }
 
-    public Collection<User> getFriendsFromUser(int userId) {
+    public Collection<User> getFriendsFromUser(long userId) {
         return userStorage.getFriendsFromUser(findUserById(userId).getId());
     }
 
-    public Collection<User> getCommonFriendsFromUser(int id, int otherId) {
+    public Collection<User> getCommonFriendsFromUser(long id, long otherId) {
         return userStorage.getCommonFriendsFromUser(findUserById(id).getId(), findUserById(otherId).getId());
     }
 
-    public Collection<Feed> getFeedByUserId(Integer id) {
+    public Collection<Feed> getFeedByUserId(long id) {
         findUserById(id);
         return feedService.getFeedByUserId(id);
     }
 
-    public void deleteById(int userId) {
+    public void deleteById(long userId) {
         userStorage.deleteById(userId);
     }
 }

@@ -11,27 +11,27 @@ public interface FilmStorage {
 
     Film save(Film film);
 
-    Optional<Film> findFilmById(int id);
+    Optional<Film> findFilmById(long id);
 
     Film update(Film film);
 
     Collection<Film> findAll();
 
-    void putLike(int filmId, int userId);
+    void putLike(long filmId, long userId);
 
     boolean deleteUsersLike(Film film, User user);
 
-    Collection<Film> getPopular(int count, Optional<Integer> genreId, Optional<Integer> year);
+    Collection<Film> getPopular(long count, Optional<Integer> genreId, Optional<Integer> year);
 
-    void deleteById(int filmId);
+    void deleteById(long filmId);
 
     List<Film> getCommonFilmsByRating(long userId, long friendId);
 
-    Collection<Film> getFilmRecommendation(int userWantsRecomId, int userWithCommonLikesId);
+    Collection<Film> getFilmRecommendation(long userWantsRecomId, long userWithCommonLikesId);
 
     Collection<Film> getSearchResults(String query, List<String> by);
 
-    List<Film> getSortedDirectorsFilmsByYears(int id);
+    List<Film> getSortedDirectorsFilmsByYears(long id);
 
-    List<Film> getSortedDirectorsFilmsByLikes(int id);
+    List<Film> getSortedDirectorsFilmsByLikes(long id);
 }

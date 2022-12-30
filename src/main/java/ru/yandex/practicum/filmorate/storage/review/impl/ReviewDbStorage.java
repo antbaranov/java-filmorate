@@ -23,7 +23,6 @@ public class ReviewDbStorage implements ReviewStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-
     @Override
     public Review save(Review review) {
         log.info("Сохраняем в базе отзыв");
@@ -34,11 +33,11 @@ public class ReviewDbStorage implements ReviewStorage {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"REVIEW_ID"});
             stmt.setString(1, review.getContent());
             stmt.setBoolean(2, review.getIsPositive());
-            stmt.setInt(3, review.getUserId());
-            stmt.setInt(4, review.getFilmId());
+            stmt.setLong(3, review.getUserId());
+            stmt.setLong(4, review.getFilmId());
             return stmt;
         }, keyHolder);
-        review.setReviewId(keyHolder.getKey().intValue());
+        review.setReviewId(keyHolder.getKey().longValue());
         log.info(" с id '{}'", review.getReviewId());
         return review;
     }
@@ -60,14 +59,14 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public boolean delete(int id) {
+    public boolean delete(long id) {
         String sqlQuery = "DELETE FROM REVIEWS WHERE REVIEW_ID = ?";
         log.info("Удаляем отзыв с id '{}'", id);
         return jdbcTemplate.update(sqlQuery, id) > 0;
     }
 
     @Override
-    public Optional<Review> getReviewById(int id) {
+    public Optional<Review> getReviewById(long id) {
         String sqlQuery = "SELECT R.REVIEW_ID, R.CONTENT, R.IS_POSITIVE, R.USER_ID, R.FILM_ID, SUM(RU.IS_USEFUL) " +
                 "FROM REVIEWS AS R " +
                 "LEFT JOIN REVIEW_USER RU on R.REVIEW_ID = RU.REVIEW_ID " +
@@ -77,12 +76,12 @@ public class ReviewDbStorage implements ReviewStorage {
 
         if (reviewsRows.next()) {
             Review review = Review.builder()
-                    .reviewId(reviewsRows.getInt("REVIEW_ID"))
+                    .reviewId(reviewsRows.getLong("REVIEW_ID"))
                     .content(reviewsRows.getString("CONTENT"))
                     .isPositive(reviewsRows.getBoolean("IS_POSITIVE"))
-                    .userId(reviewsRows.getInt("USER_ID"))
-                    .filmId(reviewsRows.getInt("FILM_ID"))
-                    .useful(reviewsRows.getInt(6))
+                    .userId(reviewsRows.getLong("USER_ID"))
+                    .filmId(reviewsRows.getLong("FILM_ID"))
+                    .useful(reviewsRows.getLong(6))
                     .build();
 
             log.info("Найден отзыв с номером {} ", reviewsRows.getInt("REVIEW_ID"));
@@ -94,7 +93,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public List<Review> getReviewsByFilmId(int filmId, int count) {
+    public List<Review> getReviewsByFilmId(long filmId, long count) {
         String sqlQuery = "SELECT R.REVIEW_ID, R.CONTENT, R.IS_POSITIVE, R.USER_ID, R.FILM_ID, " +
                 "ifnull(SUM(RU.IS_USEFUL), 0) AS USEFUL " +
                 "FROM REVIEWS AS R " +
@@ -108,7 +107,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public List<Review> getAllReviewsByParam(int count) {
+    public List<Review> getAllReviewsByParam(long count) {
         String sqlQuery = "SELECT R.REVIEW_ID, R.CONTENT, R.IS_POSITIVE, R.USER_ID, R.FILM_ID, " +
                 "ifnull(SUM(RU.IS_USEFUL), 0) AS USEFUL " +
                 "FROM REVIEWS AS R " +
@@ -121,20 +120,20 @@ public class ReviewDbStorage implements ReviewStorage {
         return jdbcTemplate.query(sqlQuery, this::mapRowToReview, count);
     }
 
-    private Review mapRowToReview(ResultSet resultSet, int i) throws SQLException {
+    private Review mapRowToReview(ResultSet resultSet, long i) throws SQLException {
         log.info("Создаем объект Отзыв");
         return Review.builder()
-                .reviewId(resultSet.getInt("REVIEW_ID"))
+                .reviewId(resultSet.getLong("REVIEW_ID"))
                 .content(resultSet.getString("CONTENT"))
                 .isPositive(resultSet.getBoolean("IS_POSITIVE"))
-                .userId(resultSet.getInt("USER_ID"))
-                .filmId(resultSet.getInt("FILM_ID"))
-                .useful(resultSet.getInt(6))
+                .userId(resultSet.getLong("USER_ID"))
+                .filmId(resultSet.getLong("FILM_ID"))
+                .useful(resultSet.getLong(6))
                 .build();
     }
 
     @Override
-    public void putLikeOrDislikeToReview(int id, int userId, int vote) {
+    public void putLikeOrDislikeToReview(long id, long userId, long vote) {
         String sqlQuery = "INSERT INTO REVIEW_USER(REVIEW_ID, USER_ID, IS_USEFUL) " +
                 "VALUES (?, ?, ?)";
         jdbcTemplate.update(sqlQuery, id, userId, vote);
@@ -142,7 +141,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public void deleteLikeOrDislikeToReview(int id, int userId, int vote) {
+    public void deleteLikeOrDislikeToReview(long id, long userId, long vote) {
         String sqlQuery = "DELETE FROM REVIEW_USER " +
                 "WHERE REVIEW_ID = ? " +
                 "AND USER_ID = ? " +

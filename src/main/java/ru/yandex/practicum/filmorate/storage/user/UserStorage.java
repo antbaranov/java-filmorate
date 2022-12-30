@@ -13,17 +13,17 @@ public interface UserStorage {
 
     Collection<User> findAll();
 
-    Optional<User> findUserById(int id);
+    Optional<User> findUserById(long id);
 
     void addFriend(User user, User friend);
 
     boolean deleteFriend(User user, User friend);
 
-    Collection<User> getFriendsFromUser(int id);
+    Collection<User> getFriendsFromUser(long id);
 
-    Collection<User> getCommonFriendsFromUser(int id, int otherId);
+    Collection<User> getCommonFriendsFromUser(long id, long otherId);
 
-    void deleteById(int userId);
+    void deleteById(long userId);
 
-    Integer findUserWithCommonLikes(int userId);
+    long findUserWithCommonLikes(long userId);
 }

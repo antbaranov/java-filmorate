@@ -27,7 +27,7 @@ public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Optional<User> findUserById(int id) {
+    public Optional<User> findUserById(long id) {
         String sqlQuery = "SELECT USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY " +
                 "FROM USERS " +
                 "WHERE USER_ID = ?";
@@ -112,7 +112,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Collection<User> getFriendsFromUser(int userId) {
+    public Collection<User> getFriendsFromUser(long userId) {
         String sqlQuery = "SELECT USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY " +
                 "FROM USERS " +
                 "WHERE USER_ID IN " +
@@ -122,7 +122,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Collection<User> getCommonFriendsFromUser(int id, int otherId) {
+    public Collection<User> getCommonFriendsFromUser(long id, long otherId) {
         String sqlQuery = "SELECT * FROM USERS " +
                 "WHERE USER_ID IN (" +
                 "SELECT F.FRIEND_ID " +
@@ -135,14 +135,14 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void deleteById(int userId) {
+    public void deleteById(long userId) {
         String sqlQuery = "DELETE FROM USERS WHERE USER_ID = ?";
 
         jdbcTemplate.update(sqlQuery, userId);
     }
 
     @Override
-    public Integer findUserWithCommonLikes(int userWantsRecomId) {
+    public long findUserWithCommonLikes(long userWantsRecomId) {
         String sqlQuery = "SELECT fl2.user_id " +
                 "FROM FILM_LIKES AS fl1, FILM_LIKES AS fl2 " +
                 "WHERE fl1.film_id = fl2.film_id " +
@@ -150,16 +150,16 @@ public class UserDbStorage implements UserStorage {
                 "GROUP BY fl1.user_id, fl2.user_id " +
                 "ORDER BY count(*) desc limit 1";
         try {
-            return jdbcTemplate.queryForObject(sqlQuery, Integer.class, userWantsRecomId);
+            return jdbcTemplate.queryForObject(sqlQuery, Long.class, userWantsRecomId);
         } catch (EmptyResultDataAccessException exception) {
             return userWantsRecomId;
         }
     }
 
-    private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
+    private User mapRowToUser(ResultSet resultSet, long rowNum) throws SQLException {
 
         return User.builder()
-                .id(resultSet.getInt("USER_ID"))
+                .id(resultSet.getLong("USER_ID"))
                 .email(resultSet.getString("EMAIL"))
                 .login(resultSet.getString("LOGIN"))
                 .name(resultSet.getString("NAME"))

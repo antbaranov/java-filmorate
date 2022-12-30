@@ -62,8 +62,8 @@ public class FilmDbStorage implements FilmStorage {
             jdbcTemplate.batchUpdate(
                     sqlQueryForGenres, film.getGenres(), film.getGenres().size(),
                     (ps, genre) -> {
-                        ps.setInt(1, film.getId());
-                        ps.setInt(2, genre.getId());
+                        ps.setLong(1, film.getId());
+                        ps.setLong(2, genre.getId());
                     });
         } else film.setGenres(new LinkedHashSet<>());
     }
@@ -75,14 +75,14 @@ public class FilmDbStorage implements FilmStorage {
             jdbcTemplate.batchUpdate(
                     sqlQueryForDirectors, film.getDirectors(), film.getDirectors().size(),
                     (ps, director) -> {
-                        ps.setInt(1, film.getId());
-                        ps.setInt(2, director.getId());
+                        ps.setLong(1, film.getId());
+                        ps.setLong(2, director.getId());
                     });
         } else film.setDirectors(new LinkedHashSet<>());
     }
 
     @Override
-    public Optional<Film> findFilmById(int id) {
+    public Optional<Film> findFilmById(long id) {
         String sqlQuery = "SELECT F.FILM_ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA_ID, " +
                 "M.MPA_ID, M.NAME " +
                 "FROM FILMS AS F " +
@@ -92,17 +92,17 @@ public class FilmDbStorage implements FilmStorage {
 
         if (filmRows.next()) {
 
-            MPA mpa = MPA.builder()
+            Mpa mpa = Mpa.builder()
                     .id(filmRows.getInt(7))
                     .name(filmRows.getString(8))
                     .build();
 
             Film film = Film.builder()
-                    .id(filmRows.getInt(1))
+                    .id(filmRows.getLong(1))
                     .name(filmRows.getString(2))
                     .description(filmRows.getString(3))
                     .releaseDate(LocalDate.parse(filmRows.getString(4)))
-                    .duration(filmRows.getLong(5))
+                    .duration(filmRows.getInt(5))
                     .mpa(mpa)
                     .genres(new LinkedHashSet<>())
                     .directors(new LinkedHashSet<>())
@@ -110,7 +110,7 @@ public class FilmDbStorage implements FilmStorage {
             loadGenres(Collections.singletonList(film));
             loadDirectors(Collections.singletonList(film));
 
-            log.info("Найден фильм {} с названием {} ", filmRows.getInt(1),
+            log.info("Найден фильм {} с названием {} ", filmRows.getLong(1),
                     filmRows.getString(2));
 
             return Optional.of(film);
@@ -120,12 +120,12 @@ public class FilmDbStorage implements FilmStorage {
 
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
         return Film.builder()
-                .id(resultSet.getInt("FILMS.FILM_ID"))
+                .id(resultSet.getLong("FILMS.FILM_ID"))
                 .name((resultSet.getString("FILMS.NAME")))
                 .description(resultSet.getString("FILMS.DESCRIPTION"))
-                .duration(resultSet.getLong("FILMS.DURATION"))
+                .duration(resultSet.getInt("FILMS.DURATION"))
                 .releaseDate(resultSet.getObject("FILMS.RELEASE_DATE", LocalDate.class))
-                .mpa(MPA.builder()
+                .mpa(Mpa.builder()
                         .id(resultSet.getInt("MPA.MPA_ID"))
                         .name(resultSet.getString("MPA.NAME"))
                         .build())
@@ -170,15 +170,15 @@ public class FilmDbStorage implements FilmStorage {
                 "JOIN GENRE G ON G.GENRE_ID = FILM_GENRE.GENRE_ID " +
                 "WHERE FILM_ID IN (:ids)";
 
-        List<Integer> ids = films.stream()
+        List<Long> ids = films.stream()
                 .map(Film::getId)
                 .collect(toList());
-        Map<Integer, Film> filmMap = films.stream()
+        Map<Long, Film> filmMap = films.stream()
                 .collect(Collectors.toMap(Film::getId, film -> film, (a, b) -> b));
         SqlParameterSource parameters = new MapSqlParameterSource("ids", ids);
         SqlRowSet sqlRowSet = namedJdbcTemplate.queryForRowSet(sqlGenres, parameters);
         while (sqlRowSet.next()) {
-            int filmId = sqlRowSet.getInt("FILM_ID");
+            long filmId = sqlRowSet.getLong("FILM_ID");
             int genreId = sqlRowSet.getInt("GENRE_ID");
             String name = sqlRowSet.getString("NAME");
             filmMap.get(filmId).getGenres().add(Genre.builder()
@@ -194,16 +194,16 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM FILM_DIRECTOR " +
                 "JOIN DIRECTORS D ON D.DIRECTOR_ID = FILM_DIRECTOR.DIRECTOR_ID " +
                 "WHERE FILM_ID IN (:ids)";
-        List<Integer> ids = films.stream()
+        List<Long> ids = films.stream()
                 .map(Film::getId)
                 .collect(toList());
-        Map<Integer, Film> filmMap = films.stream()
+        Map<Long, Film> filmMap = films.stream()
                 .collect(Collectors.toMap(Film::getId, film -> film, (a, b) -> b));
         SqlParameterSource parameters = new MapSqlParameterSource("ids", ids);
         SqlRowSet sqlRowSet = namedJdbcTemplate.queryForRowSet(sqlDirectors, parameters);
         while (sqlRowSet.next()) {
-            int filmId = sqlRowSet.getInt("FILM_ID");
-            int directorId = sqlRowSet.getInt("DIRECTOR_ID");
+            long filmId = sqlRowSet.getLong("FILM_ID");
+            long directorId = sqlRowSet.getLong("DIRECTOR_ID");
             String name = sqlRowSet.getString("NAME");
             filmMap.get(filmId).getDirectors().add(Director.builder()
                     .id(directorId)
@@ -226,7 +226,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public void putLike(int filmId, int userId) {
+    public void putLike(long filmId, long userId) {
         String sqlQuery = "INSERT INTO FILM_LIKES (FILM_ID, USER_ID) " +
                 "VALUES (?, ?)";
 
@@ -243,7 +243,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopular(int count, Optional<Integer> genreId, Optional<Integer> year) {
+    public List<Film> getPopular(long count, Optional<Integer> genreId, Optional<Integer> year) {
         List<Film> films;
 
         String sqlQueryWithEmpty = "SELECT FILMS.FILM_ID, FILMS.NAME, DESCRIPTION, RELEASE_DATE, DURATION, M.MPA_ID, M.NAME " +
@@ -303,14 +303,14 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getFilmRecommendation(int userWantsRecomId, int userWithCommonLikesId) {
+    public Collection<Film> getFilmRecommendation(long userWantsRecomId, long userWithCommonLikesId) {
         String findIdSql = "SELECT FILM_ID FROM FILM_LIKES " +
                 "WHERE USER_ID = ? " +
                 "AND FILM_ID NOT IN (SELECT FILM_ID FROM FILM_LIKES WHERE USER_ID = ?)";
 
         try {
             return jdbcTemplate.query
-                    (findIdSql, (rs, rowNum) -> findFilmById(rs.getInt("FILM_ID")).orElseThrow(),
+                    (findIdSql, (rs, rowNum) -> findFilmById(rs.getLong("FILM_ID")).orElseThrow(),
                             userWithCommonLikesId, userWantsRecomId);
         } catch (EmptyResultDataAccessException exception) {
             return new ArrayList<>();
@@ -340,7 +340,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getSortedDirectorsFilmsByYears(int id) {
+    public List<Film> getSortedDirectorsFilmsByYears(long id) {
 
         String sqlQuery = "SELECT * FROM films f "
                 + "JOIN mpa m ON f.mpa_id = m.mpa_id "
@@ -356,7 +356,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getSortedDirectorsFilmsByLikes(int id) {
+    public List<Film> getSortedDirectorsFilmsByLikes(long id) {
         String sqlQuery =
                 "SELECT count(*) , fi.name , fi.film_id , fi.mpa_id , fi.description, fi.release_date, "
                         + "fi.duration, m.name , m.mpa_id  FROM films fi "
@@ -376,14 +376,15 @@ public class FilmDbStorage implements FilmStorage {
     }
 
 
-    public void deleteById(int filmId) {
+    public void deleteById(long filmId) {
         String sqlQuery = "DELETE FROM FILMS WHERE FILM_ID = ?";
 
         jdbcTemplate.update(sqlQuery, filmId);
     }
 
     public Collection<Film> getSearchResults(String query, List<String> by) {
-        String querySourceDbLines = "SELECT FILMS.FILM_ID, FILMS.NAME, FILMS.DESCRIPTION, FILMS.RELEASE_DATE, FILMS.DURATION, FILMS.MPA_ID, MPA.MPA_ID, MPA.NAME, " +
+        String querySourceDbLines = "SELECT FILMS.FILM_ID, FILMS.NAME, FILMS.DESCRIPTION, FILMS.RELEASE_DATE, " +
+                "FILMS.DURATION, FILMS.MPA_ID, MPA.MPA_ID, MPA.NAME, " +
                 "D.NAME, " +
                 "COUNT(FLMLK.FILM_ID) RATE " +
                 "FROM FILMS " +

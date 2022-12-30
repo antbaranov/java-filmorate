@@ -10,15 +10,15 @@ public interface ReviewStorage {
 
     Review update(Review review);
 
-    boolean delete(int id);
+    boolean delete(long id);
 
-    Optional<Review> getReviewById(int id);
+    Optional<Review> getReviewById(long id);
 
-    List<Review> getReviewsByFilmId(int filmId, int count);
+    List<Review> getReviewsByFilmId(long filmId, long count);
 
-    List<Review> getAllReviewsByParam(int count);
+    List<Review> getAllReviewsByParam(long count);
 
-    void putLikeOrDislikeToReview(int id, int userId, int vote);
+    void putLikeOrDislikeToReview(long id, long userId, long vote);
 
-    void deleteLikeOrDislikeToReview(int id, int userId, int vote);
+    void deleteLikeOrDislikeToReview(long id, long userId, long vote);
 }

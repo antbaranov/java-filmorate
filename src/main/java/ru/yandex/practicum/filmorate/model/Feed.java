@@ -11,9 +11,9 @@ import ru.yandex.practicum.filmorate.model.enums.Operation;
 @Builder
 public class Feed {
 
-    private Integer eventId;
-    private Integer entityId;
-    private Integer userId;
+    private long eventId;
+    private long entityId;
+    private long userId;
     private long timestamp;
     private EventType eventType;
     private Operation operation;

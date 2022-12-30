@@ -33,24 +33,24 @@ public class FilmController {
     }
 
     @GetMapping("{id}")
-    public Film getById(@PathVariable int id) {
+    public Film getById(@PathVariable long id) {
         return filmService.getFilmFromStorage(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public Film putLike(@PathVariable("id") int filmId,
-                        @PathVariable int userId) {
+    public Film putLike(@PathVariable("id") long filmId,
+                        @PathVariable long userId) {
         return filmService.putLike(filmId, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public Film deleteLike(@PathVariable("id") int filmId,
-                           @PathVariable int userId) {
+    public Film deleteLike(@PathVariable("id") long filmId,
+                           @PathVariable long userId) {
         return filmService.deleteLike(filmId, userId);
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getMostRatedFilms(@RequestParam(defaultValue = "10") int count,
+    public Collection<Film> getMostRatedFilms(@RequestParam(defaultValue = "10") long count,
                                               @RequestParam Optional<Integer> genreId,
                                               @RequestParam Optional<Integer> year) {
         return filmService.getPopular(count, genreId, year);
@@ -63,7 +63,7 @@ public class FilmController {
     }
 
     @DeleteMapping("/{filmId}")
-    public void deleteById(@PathVariable int filmId) {
+    public void deleteById(@PathVariable long filmId) {
         filmService.deleteById(filmId);
     }
 

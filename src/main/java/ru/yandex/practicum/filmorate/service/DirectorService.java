@@ -21,7 +21,7 @@ public class DirectorService {
         return directorStorage.save(director);
     }
 
-    public Director findDirectorById(int id) {
+    public Director findDirectorById(long id) {
         return directorStorage.findDirectorById(id).
                 orElseThrow(() -> new NotFoundException("Режиссер не найден!"));
     }
@@ -37,7 +37,7 @@ public class DirectorService {
         return directorStorage.findAll();
     }
 
-    public void deleteDirectorByID(int id) {
+    public void deleteDirectorByID(long id) {
         log.info(String.format("Удаляем режиссера с id: %s", id));
         if (!directorStorage.deleteDirector(id))
             throw new NotFoundException("Режиссер с таким id отсутствует в базе");

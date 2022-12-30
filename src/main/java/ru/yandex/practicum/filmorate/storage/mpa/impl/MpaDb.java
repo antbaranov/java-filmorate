@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.MPA;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.sql.ResultSet;
@@ -20,12 +20,12 @@ public class MpaDb implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Optional<MPA> findMpaById(int id) {
+    public Optional<Mpa> findMpaById(int id) {
         String sqlQuery = "SELECT MPA_ID, NAME FROM MPA WHERE MPA_ID = ?";
 
         SqlRowSet mpaRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
         if (mpaRows.next()) {
-            MPA mpa = MPA.builder()
+            Mpa mpa = Mpa.builder()
                     .id(mpaRows.getInt("MPA_ID"))
                     .name(mpaRows.getString("NAME"))
                     .build();
@@ -39,15 +39,15 @@ public class MpaDb implements MpaStorage {
     }
 
     @Override
-    public Collection<MPA> findAll() {
+    public Collection<Mpa> findAll() {
         String sqlQuery = "SELECT MPA_ID, NAME FROM MPA";
 
         return jdbcTemplate.query(sqlQuery, this::mapRowToMpa);
     }
 
     @Override
-    public MPA mapRowToMpa(ResultSet resultSet, int i) throws SQLException {
-        return MPA.builder()
+    public Mpa mapRowToMpa(ResultSet resultSet, int i) throws SQLException {
+        return Mpa.builder()
                 .id(resultSet.getInt("MPA_ID"))
                 .name(resultSet.getString("NAME"))
                 .build();

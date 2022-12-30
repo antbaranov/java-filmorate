@@ -31,12 +31,12 @@ public class DirectorController {
     }
 
     @GetMapping("{id}")
-    public Director getById(@PathVariable int id) {
+    public Director getById(@PathVariable long id) {
         return directorService.findDirectorById(id);
     }
 
     @DeleteMapping("{id}")
-    public void deleteDirectorById(@PathVariable int id) {
+    public void deleteDirectorById(@PathVariable long id) {
         directorService.deleteDirectorByID(id);
     }
 }

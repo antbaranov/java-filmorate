@@ -13,7 +13,7 @@ public interface DirectorStorage {
 
     Collection<Director> findAll();
 
-    Optional<Director> findDirectorById(int id);
+    Optional<Director> findDirectorById(long id);
 
-    boolean deleteDirector(int id);
+    boolean deleteDirector(long id);
 }
