@@ -2,20 +2,16 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.AssertionsForClassTypes;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.dao.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -23,47 +19,49 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 
 public class UserStorageTest {
-    private final UserDbStorage userStorage;
+    private final UserStorage userStorage;
 
-    private User user1 = new User(1,
-            "1@ya.ru",
-            "login1",
-            "Name1",
-            LocalDate.of(1980, 1, 1),
-            new ArrayList<>());
-    private User user2 = new User(2,
-            "2@ya.ru",
-            "login2",
-            "Name2",
-            LocalDate.of(1980, 1, 1),
-            new ArrayList<>());
-    private User user3 = new User(3,
-            "3@ya.ru",
-            "login3",
-            "Name3",
-            LocalDate.of(1980, 1, 1),
-            new ArrayList<>());
+    private final User user1 = User.builder()
+            .email("1@ya.ru")
+            .login("login1")
+            .name("Name1")
+            .birthday(LocalDate.parse("1967-03-01"))
+            .build();
+
+    private final User user2 = User.builder()
+            .email("2@ya.ru")
+            .login("login2")
+            .name("Name2")
+            .birthday(LocalDate.parse("1967-03-01"))
+            .build();
+
+    private final User user3 = User.builder()
+            .email("3ya.ru")
+            .login("login3")
+            .name("Name3")
+            .birthday(LocalDate.parse("1967-03-01"))
+            .build();
 
     @Test
     public void createUserTest() {
-        userStorage.createUser(user1);
+        userStorage.save(user1);
         AssertionsForClassTypes.assertThat(user1).extracting("id").isNotNull();
         AssertionsForClassTypes.assertThat(user1).extracting("name").isNotNull();
     }
 
     @Test
     public void getAllUsersTest() {
-        userStorage.createUser(user2);
-        userStorage.createUser(user3);
-        Collection<User> dbUsers = userStorage.getAllUsers();
+        userStorage.save(user2);
+        userStorage.save(user3);
+        Collection<User> dbUsers = userStorage.findAll();
         assertEquals(2, dbUsers.size());
     }
 
     @Test
     public void deleteUserTest() {
-        Collection<User> beforeDelete = userStorage.getAllUsers();
-        userStorage.deleteUser(user1);
-        Collection<User> afterDelete = userStorage.getAllUsers();
+        Collection<User> beforeDelete = userStorage.findAll();
+        userStorage.deleteById(1);
+        Collection<User> afterDelete = userStorage.findAll();
         assertEquals(beforeDelete.size() - 1, afterDelete.size());
     }
 }

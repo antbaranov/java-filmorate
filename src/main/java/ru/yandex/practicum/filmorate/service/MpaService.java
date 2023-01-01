@@ -1,31 +1,27 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.util.Collection;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MpaService {
+
     private final MpaStorage mpaStorage;
 
-    public Collection<Mpa> getAllMpa() {
-        return mpaStorage.getAllMpa();
+    public Collection<Mpa> getAllMPA() {
+        return mpaStorage.findAll();
     }
 
-    public Mpa getMpaById(String strId) {
-        int id = parseId(strId);
-        return mpaStorage.getMpaById(id);
-    }
-
-    private Integer parseId(final String strId) {
-        try {
-            return Integer.valueOf(strId);
-        } catch (NumberFormatException exception) {
-            return Integer.MIN_VALUE;
-        }
+    public Mpa getMPAById(int id) {
+        return mpaStorage.findMpaById(id)
+                .orElseThrow(() -> new NotFoundException("Рейтинг с таким id отсутствует"));
     }
 }
