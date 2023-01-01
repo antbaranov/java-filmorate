@@ -23,7 +23,6 @@ import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 public class UserService {
 
     private final UserStorage userStorage;
-    private final FilmStorage filmStorage;
     private final FeedService feedService;
 
     public Collection<User> findAll() {

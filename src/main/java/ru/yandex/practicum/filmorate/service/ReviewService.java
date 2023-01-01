@@ -23,11 +23,12 @@ public class ReviewService {
 
 
     public Review save(Review review) {
-        if (review != null && review.getUserId() <= 0)
-            throw new NotFoundException("Пользователь с таким id не может существовать");
-
-        if (review != null && review.getFilmId() <= 0)
-            throw new NotFoundException("Фильм с таким id не может существовать");
+        if (review != null && review.getUserId() <= 0L) {
+            throw new NotFoundException("К сожалению, Пользователь с таким id не может существовать");
+        }
+        if (review != null && review.getFilmId() <= 0L) {
+            throw new NotFoundException("К сожалению, Фильм с таким id не может существовать");
+        }
         Review rew = reviewStorage.save(review);
         feedService.addFeed(rew.getReviewId(), rew.getUserId(), REVIEW, ADD);
         return rew;

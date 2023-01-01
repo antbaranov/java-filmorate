@@ -62,7 +62,7 @@ public class ReviewDbStorage implements ReviewStorage {
     public boolean delete(long id) {
         String sqlQuery = "DELETE FROM REVIEWS WHERE REVIEW_ID = ?";
         log.info("Удаляем отзыв с id '{}'", id);
-        return jdbcTemplate.update(sqlQuery, id) > 0;
+        return jdbcTemplate.update(sqlQuery, id) > 0L;
     }
 
     @Override

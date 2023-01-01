@@ -35,13 +35,13 @@ public class UserDbStorage implements UserStorage {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
         if (userRows.next()) {
             User user = User.builder()
-                    .id(userRows.getInt("USER_ID"))
+                    .id(userRows.getLong("USER_ID"))
                     .email(userRows.getString("EMAIL"))
                     .login(userRows.getString("LOGIN"))
                     .name(userRows.getString("NAME"))
                     .birthday(LocalDate.parse(userRows.getString("BIRTHDAY")))
                     .build();
-            log.info("Найден пользователь {} с именем {} ", userRows.getInt("USER_ID"),
+            log.info("Найден пользователь {} с именем {} ", userRows.getLong("USER_ID"),
                     userRows.getString("LOGIN"));
             return Optional.of(user);
         } else {
@@ -108,7 +108,7 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "DELETE FROM FRIENDS WHERE FRIEND_ID = ?";
 
         return jdbcTemplate.update(sqlQuery,
-                friend.getId()) > 0;
+                friend.getId()) > 0L;
     }
 
     @Override
