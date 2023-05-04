@@ -67,7 +67,7 @@
 
 ### Диаграмма базы данных
 
-![Alt text](src/main/resources/db_diagram/new_diagram.png?raw=true "Title")
+![Alt text](src/main/resources/db_diagram/new_diagram.png?raw=true "Диаграмма базы данных")
 
 
 ### 🧩 Стек-технологий и опыт разработки 🧩
