@@ -384,8 +384,7 @@ public class FilmDbStorage implements FilmStorage {
 
         return films;
     }
-
-
+    
     public void deleteById(long filmId) {
         String sqlQuery = "DELETE FROM FILMS WHERE FILM_ID = ?";
 
