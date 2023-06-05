@@ -1,4 +1,5 @@
 DROP ALL OBJECTS;
+
 create table IF NOT EXISTS USERS
 (
     USER_ID  LONG auto_increment,
