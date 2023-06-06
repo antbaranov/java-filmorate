@@ -80,8 +80,8 @@ public class UserService {
     }
 
     public User findUserById(long id) {
-        return userStorage.findUserById(id).
-                orElseThrow(() -> new NotFoundException("Пользователь не найден!"));
+        return userStorage.findUserById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден!"));
     }
 
     public void addFriend(long id, long friendId) {
