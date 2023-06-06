@@ -319,9 +319,8 @@ public class FilmDbStorage implements FilmStorage {
                 "AND FILM_ID NOT IN (SELECT FILM_ID FROM FILM_LIKES WHERE USER_ID = ?)";
 
         try {
-            return jdbcTemplate.query
-                    (findIdSql, (rs, rowNum) -> findFilmById(rs.getLong("FILM_ID")).orElseThrow(),
-                            userWithCommonLikesId, userWantsRecomId);
+            return jdbcTemplate.query(findIdSql, (rs, rowNum) -> findFilmById(rs.getLong("FILM_ID"))
+                    .orElseThrow(), userWithCommonLikesId, userWantsRecomId);
         } catch (EmptyResultDataAccessException exception) {
             return new ArrayList<>();
         }
