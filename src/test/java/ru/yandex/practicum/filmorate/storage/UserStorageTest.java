@@ -1,13 +1,12 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -19,7 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 
 public class UserStorageTest {
-    private final UserStorage userStorage;
+
+    private final UserService userService;
 
     private final User user1 = User.builder()
             .email("1@ya.ru")
@@ -44,24 +44,28 @@ public class UserStorageTest {
 
     @Test
     public void createUserTest() {
-        userStorage.save(user1);
-        AssertionsForClassTypes.assertThat(user1).extracting("id").isNotNull();
-        AssertionsForClassTypes.assertThat(user1).extracting("name").isNotNull();
+        userService.create(user1);
+        assertEquals(1, userService.findUserById(1).getId());
+        assertEquals(3, userService.findAll().size());
+        user1.setId(1L);
+        user1.setName("Test");
+        userService.update(user1);
+        assertEquals("Test", userService.findUserById(1).getName());
     }
 
     @Test
     public void getAllUsersTest() {
-        userStorage.save(user2);
-        userStorage.save(user3);
-        Collection<User> dbUsers = userStorage.findAll();
+        userService.create(user2);
+        userService.create(user3);
+        Collection<User> dbUsers = userService.findAll();
         assertEquals(2, dbUsers.size());
     }
 
     @Test
     public void deleteUserTest() {
-        Collection<User> beforeDelete = userStorage.findAll();
-        userStorage.deleteById(1);
-        Collection<User> afterDelete = userStorage.findAll();
+        Collection<User> beforeDelete = userService.findAll();
+        userService.deleteById(1);
+        Collection<User> afterDelete = userService.findAll();
         assertEquals(beforeDelete.size() - 1, afterDelete.size());
     }
 }

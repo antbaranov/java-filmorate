@@ -6,15 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -24,7 +23,7 @@ class MpaStorageTest {
 
     @Test
     public void getAllMpaTest() {
-        Collection<Mpa> mpa = mpaStorage.getAllMpa();
+        Collection<Mpa> mpa = mpaStorage.findAll();
         Assertions.assertThat(mpa)
                 .extracting(Mpa::getName)
                 .containsAll(Arrays.asList("G", "PG", "PG-13", "R", "NC-17"));
@@ -32,7 +31,7 @@ class MpaStorageTest {
 
     @Test
     public void getMpaByIdTest() {
-        Optional<Mpa> mpaOptional = Optional.ofNullable(mpaStorage.getMpaById(1));
+        Optional<Mpa> mpaOptional = mpaStorage.findMpaById(1);
         assertThat(mpaOptional)
                 .isPresent()
                 .hasValueSatisfying(mpa ->

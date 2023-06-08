@@ -71,7 +71,7 @@ public class UserDbStorage implements UserStorage {
             statement.setDate(4, Date.valueOf(user.getBirthday()));
             return statement;
         }, keyHolder);
-        user.setId(keyHolder.getKey().intValue());
+        user.setId(keyHolder.getKey().longValue());
         return user;
     }
 

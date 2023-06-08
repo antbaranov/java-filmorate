@@ -7,9 +7,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
-
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
@@ -83,8 +80,8 @@ public class UserService {
     }
 
     public User findUserById(long id) {
-        return userStorage.findUserById(id).
-                orElseThrow(() -> new NotFoundException("Пользователь не найден!"));
+        return userStorage.findUserById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден!"));
     }
 
     public void addFriend(long id, long friendId) {
