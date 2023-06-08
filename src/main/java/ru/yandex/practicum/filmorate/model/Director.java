@@ -12,5 +12,4 @@ public class Director {
 
     @NotBlank(message = "Имя режиссера не может быть пустым")
     private String name;
-
 }

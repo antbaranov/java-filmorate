@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,7 +24,7 @@ class GenreStorageTest {
 
     @Test
     public void getAllGenresTest() {
-        Collection<Genre> genre = genreStorage.getAllGenres();
+        Collection<Genre> genre = genreStorage.findAll();
         Assertions.assertThat(genre)
                 .extracting(Genre::getName)
                 .containsAll(Arrays.asList("Комедия", "Драма", "Мультфильм", "Триллер", "Документальный", "Боевик"));
@@ -31,13 +32,13 @@ class GenreStorageTest {
 
     @Test
     public void getAllGenresSizeTest() {
-        Collection<Genre> genres = genreStorage.getAllGenres();
+        Collection<Genre> genres = genreStorage.findAll();
         assertEquals(6, genres.size());
     }
 
     @Test
     public void GetGenreByIdTest() {
-        Optional<Genre> genreOptional = Optional.ofNullable(genreStorage.getGenreById(1));
+        Optional<Genre> genreOptional = genreStorage.findGenreById(1);
         assertThat(genreOptional)
                 .isPresent()
                 .hasValueSatisfying(genre ->

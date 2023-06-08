@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +44,7 @@ class FilmStorageTest {
     @Test
     public void getFilmByIdTest() {
         filmStorage.save(film);
-        Film dbFilm = filmStorage.getFilmById(1);
+        Optional<Film> dbFilm = filmStorage.findFilmById(1);
         assertThat(dbFilm).hasFieldOrPropertyWithValue("id", 1);
     }
 
@@ -51,8 +52,8 @@ class FilmStorageTest {
     public void updateFilmTest() {
         Film added = filmStorage.save(film);
         added.setName("film updated");
-        filmStorage.updateFilm(added);
-        Film dbFilm = filmStorage.getFilmById(added.getId());
+        filmStorage.update(added);
+        Optional<Film> dbFilm = filmStorage.findFilmById(added.getId());
         assertThat(dbFilm).hasFieldOrPropertyWithValue("name", "film updated");
     }
 
@@ -60,7 +61,7 @@ class FilmStorageTest {
     public void deleteFilmTest() {
         Film addedFilm1 = filmStorage.save(film1);
         Film addedFilm2 = filmStorage.save(film2);
-        Collection<Film> beforeDelete = filmStorage.getAllFilms();
+        Collection<Film> beforeDelete = filmStorage.findFilmById();
         filmStorage.deleteFilm(addedFilm1);
         Collection<Film> afterDelete = filmStorage.getAllFilms();
         assertEquals(beforeDelete.size() - 1, afterDelete.size());
