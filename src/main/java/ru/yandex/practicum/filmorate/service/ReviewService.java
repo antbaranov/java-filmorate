@@ -56,8 +56,7 @@ public class ReviewService {
     }
 
     public Review getReviewById(long id) {
-        return reviewStorage.getReviewById(id).
-                orElseThrow(() -> new NotFoundException("Отзыв не найден!"));
+        return reviewStorage.getReviewById(id).orElseThrow(() -> new NotFoundException("Отзыв не найден!"));
     }
 
     public List<Review> getAllReviewsByParam(Optional<Long> filmId, long count) {
