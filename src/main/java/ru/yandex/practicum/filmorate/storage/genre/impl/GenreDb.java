@@ -10,7 +10,7 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -40,7 +40,7 @@ public class GenreDb implements GenreStorage {
     }
 
     @Override
-    public Collection<Genre> findAll() {
+    public List<Genre> findAll() {
         String sqlQuery = "SELECT GENRE_ID, NAME FROM GENRE";
         return jdbcTemplate.query(sqlQuery, this::mapRowToGenre);
     }
