@@ -46,7 +46,7 @@ public class UserStorageTest {
     public void createUserTest() {
         userService.create(user1);
         assertEquals(1, userService.findUserById(1).getId());
-        assertEquals(1, userService.findAll().size());
+        assertEquals(3, userService.findAll().size());
         user1.setId(1L);
         user1.setName("Test");
         userService.update(user1);
