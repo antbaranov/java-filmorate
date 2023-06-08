@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 
 public class UserStorageTest {
+
     private final UserService userService;
 
     private final User user1 = User.builder()
