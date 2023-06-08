@@ -41,8 +41,7 @@ class GenreStorageTest {
         Optional<Genre> genreOptional = genreStorage.findGenreById(1);
         assertThat(genreOptional)
                 .isPresent()
-                .hasValueSatisfying(genre ->
-                        assertThat(genre).hasFieldOrPropertyWithValue("id", 1)
+                .hasValueSatisfying(genre -> assertThat(genre).hasFieldOrPropertyWithValue("id", 1)
                 );
     }
 }

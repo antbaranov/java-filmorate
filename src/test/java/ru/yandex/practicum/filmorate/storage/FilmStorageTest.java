@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class FilmStorageTest {
     private final FilmService filmService;
 
-    private Mpa mpa = Mpa.builder()
+    private final Mpa mpa = Mpa.builder()
             .id(3)
             .build();
 
@@ -47,18 +47,6 @@ class FilmStorageTest {
 //            .genres("Драма")
 //            .directors("Director")
             .build();
-
-    private final Film film2 = Film.builder()
-            .id(2L)
-            .name("film2 name")
-            .description("film2 description")
-            .releaseDate(LocalDate.now().minusYears(7))
-            .duration(27)
-            .mpa(mpa)
-//            .genres("Драма")
-//            .directors("Director")
-            .build();
-
 
     @Test
     public void addFilmTest() {
@@ -85,10 +73,9 @@ class FilmStorageTest {
 
     @Test
     public void deleteFilmTest() {
-        Film addedFilm1 = filmService.save(film1);
-        Film addedFilm2 = filmService.save(film2);
+        Film addedFilm = filmService.save(film1);
         Collection<Film> beforeDelete = filmService.findAll();
-        filmService.deleteById(addedFilm1.getId());
+        filmService.deleteById(addedFilm.getId());
         Collection<Film> afterDelete = filmService.findAll();
         assertEquals(beforeDelete.size() - 1, afterDelete.size());
     }
