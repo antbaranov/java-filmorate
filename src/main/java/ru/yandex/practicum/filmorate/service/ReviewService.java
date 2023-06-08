@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static ru.yandex.practicum.filmorate.model.enums.EventType.REVIEW;
-import static ru.yandex.practicum.filmorate.model.enums.Operation.*;
+import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
+import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
+import static ru.yandex.practicum.filmorate.model.enums.Operation.UPDATE;
 
 @Slf4j
 @Service
@@ -54,8 +56,7 @@ public class ReviewService {
     }
 
     public Review getReviewById(long id) {
-        return reviewStorage.getReviewById(id).
-                orElseThrow(() -> new NotFoundException("Отзыв не найден!"));
+        return reviewStorage.getReviewById(id).orElseThrow(() -> new NotFoundException("Отзыв не найден!"));
     }
 
     public List<Review> getAllReviewsByParam(Optional<Long> filmId, long count) {

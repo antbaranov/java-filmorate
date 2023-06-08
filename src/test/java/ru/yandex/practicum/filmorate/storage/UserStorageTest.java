@@ -36,7 +36,7 @@ public class UserStorageTest {
             .build();
 
     private final User user3 = User.builder()
-            .email("3ya.ru")
+            .email("3@ya.ru")
             .login("login3")
             .name("Name3")
             .birthday(LocalDate.parse("1967-03-01"))

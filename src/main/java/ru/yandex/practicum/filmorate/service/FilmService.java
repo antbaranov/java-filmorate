@@ -19,7 +19,6 @@ import static ru.yandex.practicum.filmorate.model.enums.EventType.LIKE;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
