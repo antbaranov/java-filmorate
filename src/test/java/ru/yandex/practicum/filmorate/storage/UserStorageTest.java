@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -46,8 +45,12 @@ public class UserStorageTest {
     @Test
     public void createUserTest() {
         userService.create(user1);
-        AssertionsForClassTypes.assertThat(user1).extracting("id").isNotNull();
-        AssertionsForClassTypes.assertThat(user1).extracting("name").isNotNull();
+        assertEquals(1, userService.findUserById(1).getId());
+        assertEquals(1, userService.findAll().size());
+        user1.setId(1L);
+        user1.setName("Test");
+        userService.update(user1);
+        assertEquals("Test", userService.findUserById(1).getName());
     }
 
     @Test

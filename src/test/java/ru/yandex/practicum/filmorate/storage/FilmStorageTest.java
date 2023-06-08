@@ -28,8 +28,8 @@ class FilmStorageTest {
 
     private final Film film = Film.builder()
             .id(3L)
-            .name("film1 name")
-            .description("film1 description")
+            .name("film name")
+            .description("film description")
             .releaseDate(LocalDate.now().minusYears(10))
             .duration(37)
             .mpa(mpa)
