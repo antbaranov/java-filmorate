@@ -33,7 +33,7 @@ class FilmStorageTest {
             .releaseDate(LocalDate.now().minusYears(10))
             .duration(37)
             .mpa(mpa)
-//            .genres("Драма")
+//            .genres(genre)
 //            .directors("Director")
             .build();
 
@@ -44,8 +44,6 @@ class FilmStorageTest {
             .releaseDate(LocalDate.now().minusYears(5))
             .duration(17)
             .mpa(mpa)
-//            .genres("Драма")
-//            .directors("Director")
             .build();
 
     @Test
