@@ -33,8 +33,6 @@ class FilmStorageTest {
             .releaseDate(LocalDate.now().minusYears(10))
             .duration(37)
             .mpa(mpa)
-//            .genres(genre)
-//            .directors("Director")
             .build();
 
     private final Film film1 = Film.builder()
