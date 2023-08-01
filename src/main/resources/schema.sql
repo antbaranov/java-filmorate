@@ -1,145 +1,158 @@
 DROP ALL OBJECTS;
 
-create table IF NOT EXISTS USERS
+
+CREATE TABLE IF NOT EXISTS USERS
 (
-    USER_ID  LONG auto_increment,
-    EMAIL    CHARACTER VARYING(50) not null,
-    LOGIN    CHARACTER VARYING(50) not null,
+    USER_ID  LONG AUTO_INCREMENT,
+    EMAIL    CHARACTER VARYING(50) NOT NULL,
+    LOGIN    CHARACTER VARYING(50) NOT NULL,
     NAME     CHARACTER VARYING(50),
-    BIRTHDAY DATE                  not null,
-    constraint USERS_PK
-        primary key (USER_ID)
+    BIRTHDAY DATE                  NOT NULL,
+    CONSTRAINT USERS_PK
+        PRIMARY KEY (USER_ID)
 );
 
-create table IF NOT EXISTS FRIENDS
+
+CREATE TABLE IF NOT EXISTS FRIENDS
 (
-    USER_ID   LONG not null,
-    FRIEND_ID LONG not null,
-    constraint FRIENDS_USERS_USER_ID_FK
-        foreign key (USER_ID) references USERS
+    USER_ID   LONG NOT NULL,
+    FRIEND_ID LONG NOT NULL,
+    CONSTRAINT FRIENDS_USERS_USER_ID_FK
+        FOREIGN KEY (USER_ID) REFERENCES USERS
             ON DELETE CASCADE,
-    constraint FRIENDS_USERS_USER_ID_FK_2
-        foreign key (FRIEND_ID) references USERS
+    CONSTRAINT FRIENDS_USERS_USER_ID_FK_2
+        FOREIGN KEY (FRIEND_ID) REFERENCES USERS
             ON DELETE CASCADE
 );
+
 
 CREATE TABLE IF NOT EXISTS DIRECTORS
 (
-    DIRECTOR_ID LONG auto_increment,
-    NAME        CHARACTER VARYING(50) not null,
-    CONSTRAINT directors_pk PRIMARY KEY (DIRECTOR_ID)
+    DIRECTOR_ID LONG AUTO_INCREMENT,
+    NAME        CHARACTER VARYING(50) NOT NULL,
+    CONSTRAINT DIRECTORS_PK PRIMARY KEY (DIRECTOR_ID)
 );
+
 
 CREATE TABLE IF NOT EXISTS MPA
 (
-    MPA_ID INTEGER auto_increment,
-    NAME   CHARACTER VARYING(50) not null,
-    constraint "MPA_pk"
-        primary key (MPA_ID)
+    MPA_ID INTEGER AUTO_INCREMENT,
+    NAME   CHARACTER VARYING(50) NOT NULL,
+    CONSTRAINT "MPA_PK"
+        PRIMARY KEY (MPA_ID)
 );
 
-create table IF NOT EXISTS FILMS
+
+CREATE TABLE IF NOT EXISTS FILMS
 (
-    FILM_ID      LONG auto_increment,
-    NAME         CHARACTER VARYING(200) not null,
-    DESCRIPTION  CHARACTER VARYING(200) not null,
-    RELEASE_DATE DATE                   not null,
-    DURATION     INTEGER                not null,
-    MPA_ID       INTEGER                not null,
-    constraint FILMS_PK
-        primary key (FILM_ID),
-    constraint FILMS_MPA_MPA_ID_FK
-        foreign key (MPA_ID) references MPA
+    FILM_ID      LONG AUTO_INCREMENT,
+    NAME         CHARACTER VARYING(200) NOT NULL,
+    DESCRIPTION  CHARACTER VARYING(200) NOT NULL,
+    RELEASE_DATE DATE                   NOT NULL,
+    DURATION     INTEGER                NOT NULL,
+    MPA_ID       INTEGER                NOT NULL,
+    CONSTRAINT FILMS_PK
+        PRIMARY KEY (FILM_ID),
+    CONSTRAINT FILMS_MPA_MPA_ID_FK
+        FOREIGN KEY (MPA_ID) REFERENCES MPA
             ON DELETE CASCADE
 );
 
-create table IF NOT EXISTS FILM_LIKES
+
+CREATE TABLE IF NOT EXISTS FILM_LIKES
 (
-    FILM_ID LONG not null,
-    USER_ID LONG not null,
-    constraint FILMLIKES_FILMS_FILM_ID_FK
-        foreign key (FILM_ID) references FILMS
+    FILM_ID LONG NOT NULL,
+    USER_ID LONG NOT NULL,
+    CONSTRAINT FILMLIKES_FILMS_FILM_ID_FK
+        FOREIGN KEY (FILM_ID) REFERENCES FILMS
             ON DELETE CASCADE,
-    constraint FILMLIKES_USERS_USER_ID_FK
-        foreign key (USER_ID) references USERS
+    CONSTRAINT FILMLIKES_USERS_USER_ID_FK
+        FOREIGN KEY (USER_ID) REFERENCES USERS
             ON DELETE CASCADE
 );
 
-create table IF NOT EXISTS FILM_DIRECTOR
+
+CREATE TABLE IF NOT EXISTS FILM_DIRECTOR
 (
-    film_id     LONG NOT NULL,
-    director_id LONG NOT NULL,
-    CONSTRAINT pk_film_director
-        PRIMARY KEY (film_id, director_id),
-    CONSTRAINT fk_film_director_film_id
-        FOREIGN KEY (film_id) REFERENCES films
+    FILM_ID     LONG NOT NULL,
+    DIRECTOR_ID LONG NOT NULL,
+    CONSTRAINT PK_FILM_DIRECTOR
+        PRIMARY KEY (FILM_ID, DIRECTOR_ID),
+    CONSTRAINT FK_FILM_DIRECTOR_FILM_ID
+        FOREIGN KEY (FILM_ID) REFERENCES FILMS
             ON UPDATE CASCADE ON DELETE CASCADE,
-    CONSTRAINT fk_film_director_director_id
-        FOREIGN KEY (director_id) REFERENCES DIRECTORS
+    CONSTRAINT FK_FILM_DIRECTOR_DIRECTOR_ID
+        FOREIGN KEY (DIRECTOR_ID) REFERENCES DIRECTORS
             ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-create table IF NOT EXISTS GENRE
+
+CREATE TABLE IF NOT EXISTS GENRE
 (
-    GENRE_ID INTEGER auto_increment,
-    NAME     CHARACTER VARYING(50) not null,
-    constraint "GENRE_pk"
-        primary key (GENRE_ID)
+    GENRE_ID INTEGER AUTO_INCREMENT,
+    NAME     CHARACTER VARYING(50) NOT NULL,
+    CONSTRAINT "GENRE_PK"
+        PRIMARY KEY (GENRE_ID)
+
 
 );
 
-create table IF NOT EXISTS FILM_GENRE
+
+CREATE TABLE IF NOT EXISTS FILM_GENRE
 (
-    FILM_ID  LONG    not null,
-    GENRE_ID INTEGER not null,
-    constraint FILM_GENRE_FILMS_FILM_ID_FK
-        foreign key (FILM_ID) references FILMS
+    FILM_ID  LONG    NOT NULL,
+    GENRE_ID INTEGER NOT NULL,
+    CONSTRAINT FILM_GENRE_FILMS_FILM_ID_FK
+        FOREIGN KEY (FILM_ID) REFERENCES FILMS
             ON DELETE CASCADE,
-    constraint FILM_GENRE_GENRE_GENRE_ID_FK
-        foreign key (GENRE_ID) references GENRE
+    CONSTRAINT FILM_GENRE_GENRE_GENRE_ID_FK
+        FOREIGN KEY (GENRE_ID) REFERENCES GENRE
 );
 
-create table IF NOT EXISTS FEED
+
+CREATE TABLE IF NOT EXISTS FEED
 (
-    EVENT_ID   LONG auto_increment,
-    ENTITY_ID  LONG                  not null,
-    USER_ID    LONG                  not null,
-    TIME_STAMP LONG                  not null,
-    EVENT_TYPE CHARACTER VARYING(10) not null,
-    OPERATION  CHARACTER VARYING(10) not null,
-    constraint "FEED_pk"
-        primary key (EVENT_ID),
-    constraint FEED_USERS_USER_ID_FK
-        foreign key (USER_ID) references USERS
-            on delete cascade
+    EVENT_ID   LONG AUTO_INCREMENT,
+    ENTITY_ID  LONG                  NOT NULL,
+    USER_ID    LONG                  NOT NULL,
+    TIME_STAMP LONG                  NOT NULL,
+    EVENT_TYPE CHARACTER VARYING(10) NOT NULL,
+    OPERATION  CHARACTER VARYING(10) NOT NULL,
+    CONSTRAINT "FEED_PK"
+        PRIMARY KEY (EVENT_ID),
+    CONSTRAINT FEED_USERS_USER_ID_FK
+        FOREIGN KEY (USER_ID) REFERENCES USERS
+            ON DELETE CASCADE
 );
 
-create table IF NOT EXISTS REVIEWS
+
+CREATE TABLE IF NOT EXISTS REVIEWS
 (
-    REVIEW_ID   LONG auto_increment,
-    CONTENT     CHARACTER VARYING not null,
-    IS_POSITIVE BOOLEAN           not null,
-    USER_ID     LONG              not null,
-    FILM_ID     LONG              not null,
-    constraint "REVIEWS_pk"
-        primary key (REVIEW_ID),
-    constraint "REVIEWS_FILMS_null_fk"
-        foreign key (FILM_ID) references FILMS
-            on delete cascade,
-    constraint REVIEWS_USERS_USER_ID_FK
-        foreign key (USER_ID) references USERS
-            on delete cascade
+    REVIEW_ID   LONG AUTO_INCREMENT,
+    CONTENT     CHARACTER VARYING NOT NULL,
+    IS_POSITIVE BOOLEAN           NOT NULL,
+    USER_ID     LONG              NOT NULL,
+    FILM_ID     LONG              NOT NULL,
+    CONSTRAINT "REVIEWS_PK"
+        PRIMARY KEY (REVIEW_ID),
+    CONSTRAINT "REVIEWS_FILMS_NULL_FK"
+        FOREIGN KEY (FILM_ID) REFERENCES FILMS
+            ON DELETE CASCADE,
+    CONSTRAINT REVIEWS_USERS_USER_ID_FK
+        FOREIGN KEY (USER_ID) REFERENCES USERS
+            ON DELETE CASCADE
 );
 
-create table IF NOT EXISTS REVIEW_USER
+
+CREATE TABLE IF NOT EXISTS REVIEW_USER
 (
-    REVIEW_ID LONG not null,
-    USER_ID   LONG not null,
-    IS_USEFUL LONG not null,
-    constraint REVIEW_USER_REVIEWS_REVIEW_ID_FK
-        foreign key (REVIEW_ID) references REVIEWS
-            on delete cascade,
-    constraint REVIEW_USER_USERS_USER_ID_FK
-        foreign key (USER_ID) references USERS
-            on delete cascade
+    REVIEW_ID LONG NOT NULL,
+    USER_ID   LONG NOT NULL,
+    IS_USEFUL LONG NOT NULL,
+    CONSTRAINT REVIEW_USER_REVIEWS_REVIEW_ID_FK
+        FOREIGN KEY (REVIEW_ID) REFERENCES REVIEWS
+            ON DELETE CASCADE,
+    CONSTRAINT REVIEW_USER_USERS_USER_ID_FK
+        FOREIGN KEY (USER_ID) REFERENCES USERS
+            ON DELETE CASCADE
 );
