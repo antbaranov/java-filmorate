@@ -22,8 +22,7 @@ public class DirectorService {
     }
 
     public Director findDirectorById(long id) {
-        return directorStorage.findDirectorById(id).
-                orElseThrow(() -> new NotFoundException("Режиссер не найден!"));
+        return directorStorage.findDirectorById(id).orElseThrow(() -> new NotFoundException("Режиссер не найден!"));
     }
 
     public Director update(Director director) {
