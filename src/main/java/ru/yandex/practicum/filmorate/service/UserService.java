@@ -108,6 +108,7 @@ public class UserService {
     }
 
     public void deleteById(long userId) {
+
         userStorage.deleteById(userId);
     }
 }
