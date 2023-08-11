@@ -25,8 +25,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Director save(Director director) {
-        String sqlQuery = "INSERT INTO DIRECTORS ( NAME) " +
-                "VALUES (?)";
+        String sqlQuery = "INSERT INTO DIRECTORS (NAME) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(sqlQuery, new String[]{"DIRECTOR_ID"});
