@@ -82,7 +82,8 @@ public class FilmController {
     }
 
     @GetMapping("/search")
-    public Collection<Film> getSearchResults(@RequestParam String query, @RequestParam(defaultValue = "title") Optional<List<String>> by) {
+    public Collection<Film> getSearchResults(@RequestParam String query,
+                                             @RequestParam(defaultValue = "title") Optional<List<String>> by) {
         return filmService.getSearchResults(query, by.get());
     }
 }
